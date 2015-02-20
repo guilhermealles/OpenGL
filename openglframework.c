@@ -34,12 +34,42 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GLfloat cubeVertices[8*3] = {-1,-1,-1, -1,-1, 1, -1, 1,-1,  1,-1,-1, -1, 1, 1,  1,-1, 1,  1, 1,-1,  1, 1, 1};
-GLubyte cubeIndices[2*12] = {
-        0,1, 0,2, 0,3,                /* From three minusses to two minusses */
-        1,4, 1,5, 2,4, 2,6, 3,5, 3,6, /* From two minusses to one minus */
-        4,7, 5,7, 6,7                 /* From one minus to zero minusses */
-    };
+GLfloat cubeVertices[8*3] =
+{
+    -1, 1,-1,
+     1, 1,-1,
+     1,-1,-1,
+    -1,-1,-1,      // The first 4 vertices are the rear face of the cube
+    
+    -1, 1, 1,
+     1, 1, 1,
+     1,-1, 1,
+    -1,-1, 1        // The last 4 vertices are the front face of the cube
+};
+
+GLubyte cubeIndices[4*6] =
+{
+    0,1,2,3,       // This is the rear face
+    3,7,4,0,       // This is the left face
+    4,5,6,7,       // This is the front face
+    6,5,1,2,       // This is the right face
+    0,1,5,4,       // This is the upper face
+    7,3,2,6        // This is the lower face
+};
+
+GLfloat cubeColors[] =
+{
+    0.0,0.0,1.0,
+    0.0,1.0,0.0,
+    1.0,0.0,0.0,
+    1.0,1.0,0.0,
+    1.0,0.0,1.0,
+    1.0,1.0,0.0,
+    0.0,1.0,0.0,
+    1.0,0.5,0.0,
+};
+
+GLfloat eyePosition[3] = { 0.0f, 0.0f, 5.0f };
 
 void display(void);
 void keyboard(unsigned char key, int x, int y);
@@ -91,24 +121,54 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
-    gluLookAt(0.0,0.0,5.0,0.0,0.0,0.0,0.0,1.0,0.0);
+    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],0.0,0.0,0.0,0.0,1.0,0.0);
     
     glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    
     glVertexPointer(3, GL_FLOAT, 0, cubeVertices);
     
+    glColorPointer(3,GL_FLOAT, 0, cubeColors);
+    
     // draw a cube
-    glDrawElements(GL_LINES, 24, GL_UNSIGNED_BYTE, cubeIndices);
+    glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
     
     // deactivate vertex arrays after drawing
     glDisableClientState(GL_VERTEX_ARRAY);
-    
+    glDisableClientState(GL_COLOR_ARRAY);
     
     glutSwapBuffers();
+    glutPostRedisplay();
 }
 
 void keyboard(unsigned char key, int x, int y)
 {
-    switch (key) {
+    switch (key)
+    {
+        case 'w':
+        case 'W':
+            eyePosition[2] -= 0.5f;
+            break;
+        case 's':
+        case 'S':
+            eyePosition[2] += 0.5f;
+            break;
+        case 'a':
+        case 'A':
+            eyePosition[0] -= 0.5f;
+            break;
+        case 'd':
+        case 'D':
+            eyePosition[0] += 0.5f;
+            break;
+        case 'i':
+        case 'I':
+            eyePosition[1] += 0.5;
+            break;
+        case 'k':
+        case 'K':
+            eyePosition[1] -= 0.5f;
+            break;
         case 'q':
         case 'Q':
         case 27: // ESC key
