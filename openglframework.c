@@ -68,6 +68,9 @@ GLfloat cubeColors[] =
     0.0,1.0,0.0,
     1.0,0.5,0.0,
 };
+GLfloat coordenada_x = 0;
+GLfloat coordenada_y = 0;
+GLfloat coordenada_z = 0;
 
 GLfloat eyePosition[3] = { 0.0f, 0.0f, 5.0f };
 
@@ -121,7 +124,7 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
-    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],0.0,0.0,0.0,0.0,1.0,0.0);
+    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],coordenada_x,coordenada_y,coordenada_z,0.0,1.0,0.0);
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -147,15 +150,17 @@ void keyboard(unsigned char key, int x, int y)
     {
         case 'w':
         case 'W':
+            //if (eyePosition[2] > 3) eyePosition[2] -= 0.5f;
             eyePosition[2] -= 0.5f;
             break;
         case 's':
         case 'S':
+            //if (eyePosition[2] < 21) eyePosition[2] += 0.5f;
             eyePosition[2] += 0.5f;
             break;
         case 'a':
         case 'A':
-            eyePosition[0] -= 0.5f;
+            eyePosition[0] -= 0.1f;
             break;
         case 'd':
         case 'D':
@@ -168,6 +173,30 @@ void keyboard(unsigned char key, int x, int y)
         case 'k':
         case 'K':
             eyePosition[1] -= 0.5f;
+            break;
+        case 't':
+        case 'T':
+            coordenada_y += 0.5f;
+            break;
+        case 'g':
+        case 'G':
+            coordenada_y -= 0.5f;
+            break;
+        case 'r':
+        case 'R':
+            coordenada_z -= 0.5f;
+            break;
+        case 'y':
+        case 'Y':
+            coordenada_z += 0.5f;
+            break;
+        case 'h':
+        case 'H':
+            coordenada_x += 0.5f;
+            break;
+        case 'f':
+        case 'F':
+            coordenada_x -= 0.5f;
             break;
         case 'q':
         case 'Q':
