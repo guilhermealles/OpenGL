@@ -29,8 +29,7 @@
 #include <GL/glut.h>
 #endif
 
-
-
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -68,14 +67,17 @@ GLfloat cubeColors[] =
     0.0,1.0,0.0,
     1.0,0.5,0.0,
 };
-GLfloat coordenada_x = 0;
-GLfloat coordenada_y = 0;
-GLfloat coordenada_z = 0;
 
 GLfloat eyePosition[3] = { 0.0f, 0.0f, 5.0f };
+GLfloat coordinates[3] = { 0.0f, 0.0f, 0.0f };
+
+bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, spacePressed=false;
+
 
 void display(void);
-void keyboard(unsigned char key, int x, int y);
+void computeMovement();
+void onKeyDown(unsigned char key, int x, int y);
+void onKeyUp(unsigned char key, int x, int y);
 void reshape(int w, int h);
 
 int main(int argc, char** argv)
@@ -109,7 +111,8 @@ int main(int argc, char** argv)
 
     /* Register GLUT callback functions */
     glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
+    glutKeyboardFunc(onKeyDown);
+    glutKeyboardUpFunc(onKeyUp);
     glutReshapeFunc(reshape);
 
 
@@ -124,7 +127,8 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
-    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],coordenada_x,coordenada_y,coordenada_z,0.0,1.0,0.0);
+    computeMovement();
+    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],coordinates[0],coordinates[1],coordinates[2],0.0,1.0,0.0);
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -144,59 +148,116 @@ void display(void)
     glutPostRedisplay();
 }
 
-void keyboard(unsigned char key, int x, int y)
+void computeMovement()
+{
+    if (wPressed)
+    {
+        eyePosition[2] -= 0.1f;
+    }
+    if (sPressed)
+    {
+        eyePosition[2] += 0.1f;
+    }
+    if (aPressed)
+    {
+        eyePosition[0] -= 0.1f;
+    }
+    if (dPressed)
+    {
+        eyePosition[0] += 0.1f;
+    }
+    if (iPressed)
+    {
+        eyePosition[1] += 0.1f;
+    }
+    if (kPressed)
+    {
+        eyePosition[1] -=0.1f;
+    }
+    if (tPressed)
+    {
+        coordinates[1] += 0.1f;
+    }
+    if (gPressed)
+    {
+        coordinates[1] -= 0.1f;
+    }
+    if (fPressed)
+    {
+        coordinates[0] -= 0.1f;
+    }
+    if (hPressed)
+    {
+        coordinates[0] += 0.1f;
+    }
+    if (rPressed)
+    {
+        coordinates[2] -= 0.1f;
+    }
+    if (yPressed)
+    {
+        coordinates[2] += 0.1f;
+    }
+    if (spacePressed)
+    {
+        
+    }
+}
+
+void onKeyDown(unsigned char key, int x, int y)
 {
     switch (key)
     {
         case 'w':
         case 'W':
-            //if (eyePosition[2] > 3) eyePosition[2] -= 0.5f;
-            eyePosition[2] -= 0.5f;
+            wPressed = true;
             break;
         case 's':
         case 'S':
-            //if (eyePosition[2] < 21) eyePosition[2] += 0.5f;
-            eyePosition[2] += 0.5f;
+            sPressed = true;
             break;
         case 'a':
         case 'A':
-            eyePosition[0] -= 0.1f;
+            aPressed = true;
             break;
         case 'd':
         case 'D':
-            eyePosition[0] += 0.5f;
+            dPressed = true;
+            break;
+        case ' ':
+            spacePressed = true;
             break;
         case 'i':
         case 'I':
-            eyePosition[1] += 0.5;
+            iPressed = true;
             break;
         case 'k':
         case 'K':
-            eyePosition[1] -= 0.5f;
+            kPressed = true;
             break;
         case 't':
         case 'T':
-            coordenada_y += 0.5f;
+            tPressed = true;
             break;
         case 'g':
         case 'G':
-            coordenada_y -= 0.5f;
+            gPressed = true;
             break;
         case 'r':
         case 'R':
-            coordenada_z -= 0.5f;
+            rPressed = true;
             break;
         case 'y':
         case 'Y':
-            coordenada_z += 0.5f;
+            yPressed = true;
             break;
         case 'h':
         case 'H':
-            coordenada_x += 0.5f;
+            hPressed = true;
             break;
         case 'f':
         case 'F':
-            coordenada_x -= 0.5f;
+            fPressed = true;
             break;
         case 'q':
         case 'Q':
@@ -204,7 +265,68 @@ void keyboard(unsigned char key, int x, int y)
             printf("Exiting...\n");
             exit(0);
             break;
+
     }
+}
+
+void onKeyUp(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+        case 'w':
+        case 'W':
+            wPressed = false;
+            break;
+        case 's':
+        case 'S':
+            sPressed = false;
+            break;
+        case 'a':
+        case 'A':
+            aPressed = false;
+            break;
+        case 'd':
+        case 'D':
+            dPressed = false;
+            break;
+        case ' ':
+            spacePressed = false;
+            break;
+        case 'i':
+        case 'I':
+            iPressed = false;
+            break;
+        case 'k':
+        case 'K':
+            kPressed = false;
+            break;
+        case 't':
+        case 'T':
+            tPressed = false;
+            break;
+        case 'g':
+        case 'G':
+            gPressed = false;
+            break;
+        case 'r':
+        case 'R':
+            rPressed = false;
+            break;
+        case 'y':
+        case 'Y':
+            yPressed = false;
+            break;
+        case 'h':
+        case 'H':
+            hPressed = false;
+            break;
+        case 'f':
+        case 'F':
+            fPressed = false;
+            break;
+            
+    }
+
 }
 
 void reshape(int w, int h)
