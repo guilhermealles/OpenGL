@@ -82,29 +82,25 @@ GLfloat eyePosition[3] = { 0.0f, 0.0f, 5.0f };
 GLfloat lookAtPosition[3] = { 0.0f, 0.0f, 0.0f };
 GLfloat cameraUpVector[3] = { 0.0f, 1.0f, 0.0f };
 
-int old_x = 0, old_y = 0; // Stores the last mouse position
+GLfloat old_x = 0, old_y = 0; // Stores the last mouse position
 GLfloat horizontal_angle = 0, vertical_angle = 0; // How far is the mouse from the center of the window
 GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
-<<<<<<< HEAD
 
-bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, spacePressed=false;
-=======
 bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
->>>>>>> origin/master
+
 
 void showStartMessage();
 void display(void);
 void updateCamera();
-<<<<<<< HEAD
+
 void computeKeyboardMovement();
 void onMouseDown(int x, int y);
-=======
+
 void computeMovement();
-void onMouseButton(int button, int state, int x, int y);
->>>>>>> origin/master
+
 void onKeyDown(unsigned char key, int x, int y);
 void onKeyUp(unsigned char key, int x, int y);
 void onSpecialInputDown(int key, int x, int y);
@@ -146,14 +142,10 @@ int main(int argc, char** argv)
     glutSpecialFunc(onSpecialInputDown);
     glutSpecialUpFunc(onSpecialInputUp);
     glutReshapeFunc(reshape);
-<<<<<<< HEAD
     glutMotionFunc(onMouseDown);
-
-=======
 
     showStartMessage();
     
->>>>>>> origin/master
     glutMainLoop();
     return 0;
 }
@@ -169,7 +161,6 @@ void display(void)
     glLoadIdentity();
     gluPerspective(fieldOfViewY,(GLdouble)windowDimensions[0]/(GLdouble)windowDimensions[1],1.5,20.0);
     glMatrixMode(GL_MODELVIEW);
-    
     
     computeMovement();
     updateCamera();
@@ -262,7 +253,6 @@ void onMouseDown (int x, int y)
 {
     if (x == 0 && y == 0)
     {
-        // Acabou de clicar
         old_x = x;
         old_y = y;
     }
@@ -270,25 +260,30 @@ void onMouseDown (int x, int y)
     {
         double delta_x = x - old_x;
         double delta_y = y - old_y;
-
+        
         if (delta_x > 0) // Went right
         {
-            
+            puts("Direita");
+            rotY += 4.0f;
         }
         if (delta_x < 0) // Went left
         {
-            
+            puts("Esquerda");
+            rotY -= 4.0f;
         }
         if (delta_y > 0) // Went up
         {
-            
+            puts("Cima");
+            rotX += 4.0f;
         }
         if (delta_y < 0) // Went down
         {
-            
+            puts("Baixo");
+            rotX -= 4.0f;
         }
-        
-        
+
+        old_x = x;
+        old_y = y;
     }
 }
 
@@ -359,7 +354,6 @@ void onKeyDown(unsigned char key, int x, int y)
             printf("Exiting...\n");
             exit(0);
             break;
-
     }
 }
 
