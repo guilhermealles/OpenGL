@@ -221,11 +221,11 @@ void computeKeyboardMovement()
     }
     if (dotPressed)
     {
-        fieldOfViewY += 1;
+        if (fieldOfViewY < 180.0f) fieldOfViewY += 1;
     }
     if (commaPressed)
     {
-        fieldOfViewY -= 1;
+        if (fieldOfViewY > 01.0f) fieldOfViewY -= 1;
     }
     if (spacePressed)
     {
