@@ -88,28 +88,13 @@ GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
-<<<<<<< HEAD
-
 bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
-
-=======
-bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
->>>>>>> origin/master
 
 void showStartMessage();
 void display(void);
 void updateCamera();
-<<<<<<< HEAD
-
-void computeKeyboardMovement();
-void onMouseDown(int x, int y);
-
-void computeMovement();
-
-=======
 void computeMovement();
 void onMouseDown(int x, int y);
->>>>>>> origin/master
 void onKeyDown(unsigned char key, int x, int y);
 void onKeyUp(unsigned char key, int x, int y);
 void onSpecialInputDown(int key, int x, int y);
@@ -152,16 +137,9 @@ int main(int argc, char** argv)
     glutSpecialUpFunc(onSpecialInputUp);
     glutReshapeFunc(reshape);
     glutMotionFunc(onMouseDown);
-<<<<<<< HEAD
-
-    showStartMessage();
-    
-=======
-    
     
     showStartMessage();
 
->>>>>>> origin/master
     glutMainLoop();
     return 0;
 }
@@ -189,9 +167,6 @@ void display(void)
     // Disable client states after drawing
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
-    
-    // Reset mouse position for next frame
-    glutWarpPointer(windowDimensions[0]/2, windowDimensions[1]/2);
     
     glutSwapBuffers();
     glutPostRedisplay();
@@ -283,25 +258,20 @@ void onMouseDown (int x, int y)
         
         if (delta_x > 0) // Went right
         {
-            puts("Direita");
-            rotY += 4.0f;
+            rotY += 1.0f;
         }
         if (delta_x < 0) // Went left
         {
-            puts("Esquerda");
-            rotY -= 4.0f;
+            rotY -= 1.0f;
         }
         if (delta_y > 0) // Went up
         {
-            puts("Cima");
-            rotX += 4.0f;
+            rotX += 1.0f;
         }
         if (delta_y < 0) // Went down
         {
-            puts("Baixo");
-            rotX -= 4.0f;
+            rotX -= 1.0f;
         }
-
         old_x = x;
         old_y = y;
     }
