@@ -88,23 +88,13 @@ GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
-<<<<<<< HEAD
-
-bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, spacePressed=false;
-=======
 bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
->>>>>>> origin/master
 
 void showStartMessage();
 void display(void);
 void updateCamera();
-<<<<<<< HEAD
-void computeKeyboardMovement();
-void onMouseDown(int x, int y);
-=======
 void computeMovement();
-void onMouseButton(int button, int state, int x, int y);
->>>>>>> origin/master
+void onMouseDown(int x, int y);
 void onKeyDown(unsigned char key, int x, int y);
 void onKeyUp(unsigned char key, int x, int y);
 void onSpecialInputDown(int key, int x, int y);
@@ -146,14 +136,11 @@ int main(int argc, char** argv)
     glutSpecialFunc(onSpecialInputDown);
     glutSpecialUpFunc(onSpecialInputUp);
     glutReshapeFunc(reshape);
-<<<<<<< HEAD
     glutMotionFunc(onMouseDown);
-
-=======
-
-    showStartMessage();
     
->>>>>>> origin/master
+    
+    showStartMessage();
+
     glutMainLoop();
     return 0;
 }
@@ -204,8 +191,8 @@ void computeMovement()
 {
     if (wPressed)
     {
-        eyePosition[0] += 0.05 * sin(rotY*PI/180);
-        eyePosition[2] += -0.05 * cos(rotY*PI/180);
+        eyePosition[0] += 0.025 * sin(rotY*PI/180);
+        eyePosition[2] += -0.025 * cos(rotY*PI/180);
     }
     if (sPressed)
     {
@@ -214,19 +201,23 @@ void computeMovement()
     }
     if (aPressed)
     {
-        eyePosition[0] -= 0.1f;
+        // Not working correctly
+        eyePosition[0] += 0.025 * cos(rotY*PI/180);
+        eyePosition[2] += -0.025 * sin(rotY*PI/180);
     }
     if (dPressed)
     {
-        eyePosition[0] += 0.1f;
+        // Also not working correctly
+        eyePosition[0] -= 0.025 * cos(rotY*PI/180);
+        eyePosition[2] -= -0.025 * sin(rotY*PI/180);
     }
     if (iPressed)
     {
-        eyePosition[1] += 0.1f;
+
     }
     if (kPressed)
     {
-        eyePosition[1] -=0.1f;
+
     }
     if (upPressed)
     {
