@@ -181,11 +181,13 @@ void computeKeyboardMovement()
 {
     if (wPressed)
     {
-        eyePosition[2] -= 0.1f;
+        eyePosition[0] += 0.05 * sin(rotY*PI/180);
+        eyePosition[2] += -0.05 * cos(rotY*PI/180);
     }
     if (sPressed)
     {
-        eyePosition[2] += 0.1f;
+        eyePosition[0] -= 0.025 * sin(rotY*PI/180);
+        eyePosition[2] -= -0.025 * cos(rotY*PI/180);
     }
     if (aPressed)
     {
