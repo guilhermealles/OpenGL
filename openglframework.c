@@ -191,7 +191,7 @@ void computeKeyboardMovement()
     }
     if (aPressed)
     {
-        eyePosition[0] -= 0.1f;
+        eyePosition[0] -= 0.1f; 
     }
     if (dPressed)
     {
