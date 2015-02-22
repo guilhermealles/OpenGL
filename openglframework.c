@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 GLuint windowDimensions[2] = { 800, 600 };
 
 GLfloat cubeVertices[8*3] =
@@ -79,14 +80,19 @@ GLfloat eyePosition[3] = { 0.0f, 0.0f, 5.0f };
 GLfloat lookAtPosition[3] = { 0.0f, 0.0f, 0.0f };
 GLfloat cameraUpVector[3] = { 0.0f, 1.0f, 0.0f };
 
+int old_x = 0, old_y = 0; // Stores the last mouse position
+GLfloat horizontal_angle = 0, vertical_angle = 0; // How far is the mouse from the center of the window
+GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
+GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
+GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
+
 
 bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, spacePressed=false;
-
 
 void display(void);
 void updateCamera();
 void computeKeyboardMovement();
-void onMouseButton(int button, int state, int x, int y);
+void onMouseDown(int x, int y);
 void onKeyDown(unsigned char key, int x, int y);
 void onKeyUp(unsigned char key, int x, int y);
 void reshape(int w, int h);
@@ -96,7 +102,6 @@ int main(int argc, char** argv)
 #if defined(NEED_GLEW)
     GLenum err;
 #endif
-
 
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -122,11 +127,10 @@ int main(int argc, char** argv)
 
     /* Register GLUT callback functions */
     glutDisplayFunc(display);
-    glutMouseFunc(onMouseButton);
     glutKeyboardFunc(onKeyDown);
     glutKeyboardUpFunc(onKeyUp);
     glutReshapeFunc(reshape);
-
+    glutMotionFunc(onMouseDown);
 
     glutMainLoop();
     return 0;
@@ -151,8 +155,12 @@ void display(void)
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
     
+    // Reset mouse position for next frame
+    glutWarpPointer(windowDimensions[0]/2, windowDimensions[1]/2);
+    
     glutSwapBuffers();
     glutPostRedisplay();
+    
 }
 
 void updateCamera()
@@ -220,9 +228,38 @@ void computeKeyboardMovement()
     }
 }
 
-void onMouseButton(int button, int state, int x, int y)
+void onMouseDown (int x, int y)
 {
-    
+    if (x == 0 && y == 0)
+    {
+        // Acabou de clicar
+        old_x = x;
+        old_y = y;
+    }
+    else
+    {
+        double delta_x = x - old_x;
+        double delta_y = y - old_y;
+
+        if (delta_x > 0) // Went right
+        {
+            
+        }
+        if (delta_x < 0) // Went left
+        {
+            
+        }
+        if (delta_y > 0) // Went up
+        {
+            
+        }
+        if (delta_y < 0) // Went down
+        {
+            
+        }
+        
+        
+    }
 }
 
 void onKeyDown(unsigned char key, int x, int y)
