@@ -74,8 +74,8 @@ GLfloat cubeColors[] =
 
 GLfloat fieldOfViewY = 60.0f;
 
-GLfloat rotY = 0; // Camera rotation in the y axis, in degrees
-GLfloat rotX = 90; // Camera rotation in the x axis, in degrees
+GLfloat rotY = 0; // Camera rotation aroud the y axis, in degrees
+GLfloat rotX = 90; // Camera rotation around the x axis, in degrees
 
 GLfloat eyePosition[3] = { 0.0f, 0.0f, 5.0f };
 GLfloat lookAtPosition[3] = { 0.0f, 0.0f, 0.0f };
@@ -87,7 +87,7 @@ bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=fa
 void showStartMessage();
 void display(void);
 void updateCamera();
-void computeKeyboardMovement();
+void computeMovement();
 void onMouseButton(int button, int state, int x, int y);
 void onKeyDown(unsigned char key, int x, int y);
 void onKeyUp(unsigned char key, int x, int y);
@@ -152,7 +152,7 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     
     
-    computeKeyboardMovement();
+    computeMovement();
     updateCamera();
     
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -177,7 +177,7 @@ void updateCamera()
     gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],cameraUpVector[0],cameraUpVector[1],cameraUpVector[2]);
 }
 
-void computeKeyboardMovement()
+void computeMovement()
 {
     if (wPressed)
     {
@@ -191,7 +191,7 @@ void computeKeyboardMovement()
     }
     if (aPressed)
     {
-        eyePosition[0] -= 0.1f; 
+        eyePosition[0] -= 0.1f;
     }
     if (dPressed)
     {
