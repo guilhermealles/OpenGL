@@ -72,6 +72,8 @@ GLfloat cubeColors[] =
     1.0,0.5,0.0,
 };
 
+GLfloat fieldOfViewY = 60.0f;
+
 GLfloat rotY = 0; // Camera rotation in the y axis, in degrees
 GLfloat rotX = 90; // Camera rotation in the x axis, in degrees
 
@@ -80,15 +82,17 @@ GLfloat lookAtPosition[3] = { 0.0f, 0.0f, 0.0f };
 GLfloat cameraUpVector[3] = { 0.0f, 1.0f, 0.0f };
 
 
-bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, spacePressed=false;
+bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
 
-
+void showStartMessage();
 void display(void);
 void updateCamera();
 void computeKeyboardMovement();
 void onMouseButton(int button, int state, int x, int y);
 void onKeyDown(unsigned char key, int x, int y);
 void onKeyUp(unsigned char key, int x, int y);
+void onSpecialInputDown(int key, int x, int y);
+void onSpecialInputUp(int key, int x, int y);
 void reshape(int w, int h);
 
 int main(int argc, char** argv)
@@ -125,9 +129,12 @@ int main(int argc, char** argv)
     glutMouseFunc(onMouseButton);
     glutKeyboardFunc(onKeyDown);
     glutKeyboardUpFunc(onKeyUp);
+    glutSpecialFunc(onSpecialInputDown);
+    glutSpecialUpFunc(onSpecialInputUp);
     glutReshapeFunc(reshape);
 
-
+    showStartMessage();
+    
     glutMainLoop();
     return 0;
 }
@@ -138,6 +145,12 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fieldOfViewY,(GLdouble)windowDimensions[0]/(GLdouble)windowDimensions[1],1.5,20.0);
+    glMatrixMode(GL_MODELVIEW);
+    
     
     computeKeyboardMovement();
     updateCamera();
@@ -190,29 +203,29 @@ void computeKeyboardMovement()
     {
         eyePosition[1] -=0.1f;
     }
-    if (tPressed)
+    if (upPressed)
     {
         rotX += 4.0f;
     }
-    if (gPressed)
+    if (downPressed)
     {
         rotX -= 4.0f;
     }
-    if (fPressed)
+    if (leftPressed)
     {
         rotY -= 4.0f;
     }
-    if (hPressed)
+    if (rightPressed)
     {
         rotY += 4.0f;
     }
-    if (rPressed)
+    if (dotPressed)
     {
-        lookAtPosition[2] -= 0.1f;
+        fieldOfViewY += 1;
     }
-    if (yPressed)
+    if (commaPressed)
     {
-        lookAtPosition[2] += 0.1f;
+        fieldOfViewY -= 1;
     }
     if (spacePressed)
     {
@@ -280,6 +293,12 @@ void onKeyDown(unsigned char key, int x, int y)
         case 'F':
             fPressed = true;
             break;
+        case ',':
+            commaPressed = true;
+            break;
+        case '.':
+            dotPressed = true;
+            break;
         case 'q':
         case 'Q':
         case 27: // ESC key
@@ -345,9 +364,52 @@ void onKeyUp(unsigned char key, int x, int y)
         case 'F':
             fPressed = false;
             break;
-            
+        case ',':
+            commaPressed = false;
+            break;
+        case '.':
+            dotPressed = false;
+            break;
     }
 
+}
+
+void onSpecialInputDown(int key, int x, int y)
+{
+    switch (key)
+    {
+        case GLUT_KEY_UP:
+            upPressed = true;
+            break;
+        case GLUT_KEY_DOWN:
+            downPressed = true;
+            break;
+        case GLUT_KEY_LEFT:
+            leftPressed = true;
+            break;
+        case GLUT_KEY_RIGHT:
+            rightPressed = true;
+            break;
+    }
+}
+
+void onSpecialInputUp(int key, int x, int y)
+{
+    switch (key)
+    {
+        case GLUT_KEY_UP:
+            upPressed = false;
+            break;
+        case GLUT_KEY_DOWN:
+            downPressed = false;
+            break;
+        case GLUT_KEY_LEFT:
+            leftPressed = false;
+            break;
+        case GLUT_KEY_RIGHT:
+            rightPressed = false;
+            break;
+    }
 }
 
 void reshape(int w, int h)
@@ -355,9 +417,17 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0,(GLdouble)w/(GLdouble)h,1.5,20.0);
+    gluPerspective(fieldOfViewY,(GLdouble)w/(GLdouble)h,1.5,20.0);
     glMatrixMode(GL_MODELVIEW);
     
     windowDimensions[0] = w;
     windowDimensions[1] = h;
+}
+
+void showStartMessage()
+{
+    puts("Computer Graphics Assignment - OpenGL:");
+    puts("W, S, A, D - Move through X and Z Axis;");
+    puts("Arrow Keys - Rotate the camera around the X and Y Axis;");
+    puts(", and . - Change the fovy of the perspective;");
 }
