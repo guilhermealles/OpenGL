@@ -30,13 +30,15 @@
 #endif
 
 #define PI 3.14159265359
+#define SPHERE_N (20)
 
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 
-GLuint windowDimensions[2] = { 800, 600 };
+GLuint windowDimensions[2] = { 400, 400 };
 
 GLfloat cubeVertices[8*3] =
 {
@@ -89,6 +91,16 @@ GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
+/*Light
+GLfloat mat_specular[] = {1.0,1.0,1.0,1.0};
+GLfloat mat_shininess[] = {50.0};
+GLfloat light_position[] = {1.0,1.0,1.0,0.0};
+glClearColor (0.0,0.0,0.0,0.0);
+
+glMaterialgv(GL_FRONT, GL_SPECULAR, mat_specular);
+glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+glLightfv(GL_LIGHT0, GL_POSITION, light_position);*/
+
 bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
 
 void showStartMessage();
@@ -101,6 +113,7 @@ void onKeyUp(unsigned char key, int x, int y);
 void onSpecialInputDown(int key, int x, int y);
 void onSpecialInputUp(int key, int x, int y);
 void reshape(int w, int h);
+void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n);
 
 int main(int argc, char** argv)
 {
@@ -127,7 +140,9 @@ int main(int argc, char** argv)
 
     /* Select clearing (background) color */
     glClearColor(0.0,0.0,0.0,0.0);
-    glShadeModel(GL_FLAT);
+    //glShadeModel(GL_FLAT);
+    glShadeModel(GL_SMOOTH); //ADDED NEW <<<
+    glEnable(GL_LIGHT0); // ADDED NEW <<<
     glEnable(GL_DEPTH_TEST);
 
     /* Register GLUT callback functions */
@@ -154,6 +169,7 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
+    //gluLookAt(200.0,200.0,1000.0,200.0,200.0,0.0,0.0,1.0,0.0);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -163,7 +179,38 @@ void display(void)
     computeMovement();
     updateCamera();
     
-    glEnableClientState(GL_VERTEX_ARRAY);
+    setGlMaterial(0.0f,1.0f,0.0f,0.2,0.3,0.5,8);
+    glPushMatrix();
+    glTranslated(210,270,300);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(0.0f,0.0f,1.0f,0.2f,0.7f,0.5f,64.0f);
+    glPushMatrix();
+    glTranslated(90,320,100);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(1.0f,0.0f,0.0f,0.2,0.7,0.8,32);
+    glPushMatrix();
+    glTranslated(290,170,150);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(1.0f,0.8f,0.0f,0.2,0.8,0.0,1);
+    glPushMatrix();
+    glTranslated(140,220,400);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(1.0f,0.5f,0.0f,0.2,0.8,0.5,32);
+    glPushMatrix();
+    glTranslated(110,130,200);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+
+    
+    /*glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
         glRotatef(cubeRotY,0,1,0);
         glRotatef(cubeRotX,1,0,0);
@@ -175,8 +222,8 @@ void display(void)
          glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
          */
     // Disable client states after drawing
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+    //glDisableClientState(GL_VERTEX_ARRAY);
+    //glDisableClientState(GL_COLOR_ARRAY);
     
     glutSwapBuffers();
     glutPostRedisplay();
@@ -464,7 +511,8 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(fieldOfViewY,(GLdouble)w/(GLdouble)h,1.5,20.0);
+    //gluPerspective(fieldOfViewY,(GLdouble)w/(GLdouble)h,1.5,20.0);
+    gluPerspective(2.0*atan2(h/2.0,1000.0)*180.0/M_PI,(GLdouble)w/(GLdouble)h,500,1000);
     glMatrixMode(GL_MODELVIEW);
     
     windowDimensions[0] = w;
@@ -478,4 +526,15 @@ void showStartMessage()
     puts("Arrow Keys - Rotate the camera around the X and Y Axis;");
     puts(", and . - Change the fovy of the perspective;");
     puts("Mouse active movement - rotate the cube");
+}
+
+void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n)
+{
+    GLfloat ambient[] = {ka*r,ka*g,ka*b,1.0};
+    GLfloat diffuse[] = {kd*r,kd*g,kd*b,1.0};
+    GLfloat specular[] = {ks,ks,ks,1.0};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, n);
 }
