@@ -170,6 +170,10 @@ void display(void)
         glVertexPointer(3, GL_FLOAT, 0, cubeVertices);
         glColorPointer(3,GL_FLOAT, 0, cubeColors);
         glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
+        /*
+         glTranslatef(5, 5, 0);
+         glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
+         */
     // Disable client states after drawing
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
