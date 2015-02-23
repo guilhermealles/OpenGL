@@ -94,6 +94,8 @@ int main(int argc, char** argv)
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     #endif
 
+    initGLSLProgram("vertexshader.glsl","fragmentshader.glsl");
+    
     /* Select clearing (background) color */
     glClearColor(0.0,0.0,0.0,0.0);
     glShadeModel(GL_SMOOTH);
