@@ -138,6 +138,9 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutMotionFunc(onMouseDown);
     
+    
+    glutSetCursor(GLUT_CURSOR_NONE);
+    
     showStartMessage();
 
     glutMainLoop();
