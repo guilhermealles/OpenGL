@@ -60,7 +60,6 @@ GLubyte cubeIndices[4*6] =
     0,1,5,4,       // This is the upper face
     7,3,2,6        // This is the lower face
 };
-
 GLfloat cubeColors[] =
 {
     0.0,0.0,1.0,
@@ -72,6 +71,8 @@ GLfloat cubeColors[] =
     0.0,1.0,0.0,
     1.0,0.5,0.0,
 };
+GLfloat cubeRotY = 0;
+GLfloat cubeRotX = 0;
 
 GLfloat fieldOfViewY = 60.0f;
 
@@ -164,6 +165,8 @@ void display(void)
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
+        glRotatef(cubeRotY,0,1,0);
+        glRotatef(cubeRotX,1,0,0);
         glVertexPointer(3, GL_FLOAT, 0, cubeVertices);
         glColorPointer(3,GL_FLOAT, 0, cubeColors);
         glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
@@ -173,7 +176,6 @@ void display(void)
     
     glutSwapBuffers();
     glutPostRedisplay();
-    
 }
 
 void updateCamera()
@@ -261,19 +263,19 @@ void onMouseDown (int x, int y)
         
         if (delta_x > 0) // Went right
         {
-            rotY += 1.0f;
+            cubeRotY += 2;
         }
         if (delta_x < 0) // Went left
         {
-            rotY -= 1.0f;
+            cubeRotY -= 2;
         }
         if (delta_y > 0) // Went up
         {
-            rotX += 1.0f;
+            cubeRotX += 2;
         }
         if (delta_y < 0) // Went down
         {
-            rotX -= 1.0f;
+            cubeRotX -= 2;
         }
         old_x = x;
         old_y = y;
@@ -471,4 +473,5 @@ void showStartMessage()
     puts("W, S, A, D - Move through X and Z Axis;");
     puts("Arrow Keys - Rotate the camera around the X and Y Axis;");
     puts(", and . - Change the fovy of the perspective;");
+    puts("Mouse active movement - rotate the cube");
 }
