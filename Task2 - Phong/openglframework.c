@@ -40,50 +40,15 @@
 
 GLuint windowDimensions[2] = { 400, 400 };
 
-GLfloat cubeVertices[8*3] =
-{
-    -1, 1,-1,
-     1, 1,-1,
-     1,-1,-1,
-    -1,-1,-1,      // The first 4 vertices are the rear face of the cube
-    
-    -1, 1, 1,
-     1, 1, 1,
-     1,-1, 1,
-    -1,-1, 1        // The last 4 vertices are the front face of the cube
-};
-
-GLubyte cubeIndices[4*6] =
-{
-    0,1,2,3,       // This is the rear face
-    3,7,4,0,       // This is the left face
-    4,5,6,7,       // This is the front face
-    6,5,1,2,       // This is the right face
-    0,1,5,4,       // This is the upper face
-    7,3,2,6        // This is the lower face
-};
-GLfloat cubeColors[] =
-{
-    0.0,0.0,1.0,
-    0.0,1.0,0.0,
-    1.0,0.0,0.0,
-    1.0,1.0,0.0,
-    1.0,0.0,1.0,
-    1.0,1.0,0.0,
-    0.0,1.0,0.0,
-    1.0,0.5,0.0,
-};
 GLfloat spheresRotY = 0;
 GLfloat spheresRotX = 0;
 
-GLfloat fieldOfViewY = 60.0f;
 
 GLfloat rotY = 0; // Camera rotation aroud the y axis, in degrees
 GLfloat rotX = 90; // Camera rotation around the x axis, in degrees
 
 GLfloat eyePosition[3] = { 200.0, 200.0, 1000.0 };
 GLfloat lookAtPosition[3] = { 200.0, 200.0, 0.0 };
-GLfloat cameraUpVector[3] = { 0.0f, 1.0f, 0.0f };
 
 GLfloat old_x = 0, old_y = 0; // Stores the last mouse position
 GLfloat horizontal_angle = 0, vertical_angle = 0; // How far is the mouse from the center of the window
@@ -223,7 +188,7 @@ void updateCamera()
     lookAtPosition[1] = eyePosition[1] + cos(rotX*PI/180);
     lookAtPosition[2] = eyePosition[2] - cos(rotY*PI/180);
     
-    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],cameraUpVector[0],cameraUpVector[1],cameraUpVector[2]);
+    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],0.0f, 1.0f, 0.0f);
 }
 
 void computeMovement()
@@ -265,14 +230,6 @@ void computeMovement()
     if (rightPressed)
     {
         rotY += 4.0f;
-    }
-    if (dotPressed)
-    {
-        if (fieldOfViewY < 180.0f) fieldOfViewY += 1;
-    }
-    if (commaPressed)
-    {
-        if (fieldOfViewY > 01.0f) fieldOfViewY -= 1;
     }
 }
 
