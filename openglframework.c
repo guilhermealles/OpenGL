@@ -165,12 +165,13 @@ int main(int argc, char** argv)
 
 void display(void)
 {
-    /* Clear all pixels */
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
-    //gluLookAt(200.0,200.0,1000.0,200.0,200.0,0.0,0.0,1.0,0.0);
-
+    
+    
+    
+    /* This is the code for the cube (Task 1)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(fieldOfViewY,(GLdouble)windowDimensions[0]/(GLdouble)windowDimensions[1],1.5,20.0);
@@ -178,6 +179,24 @@ void display(void)
     
     computeMovement();
     updateCamera();
+     */
+    
+    /*glEnableClientState(GL_VERTEX_ARRAY);
+     glEnableClientState(GL_COLOR_ARRAY);
+     glRotatef(cubeRotY,0,1,0);
+     glRotatef(cubeRotX,1,0,0);
+     glVertexPointer(3, GL_FLOAT, 0, cubeVertices);
+     glColorPointer(3,GL_FLOAT, 0, cubeColors);
+     glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
+     
+    // Disable client states after drawing
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+     
+     This is the end of the code for the cube */
+    
+    /* This is the code for the Spheres (Task 2) */
+    gluLookAt(200.0,200.0,1000.0,200.0,200.0,0.0,0.0,1.0,0.0);
     
     setGlMaterial(0.0f,1.0f,0.0f,0.2,0.3,0.5,8);
     glPushMatrix();
@@ -208,22 +227,8 @@ void display(void)
     glTranslated(110,130,200);
     glutSolidSphere(50,SPHERE_N,SPHERE_N);
     glPopMatrix();
-
+    /* This is the end of the code for the spheres */
     
-    /*glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-        glRotatef(cubeRotY,0,1,0);
-        glRotatef(cubeRotX,1,0,0);
-        glVertexPointer(3, GL_FLOAT, 0, cubeVertices);
-        glColorPointer(3,GL_FLOAT, 0, cubeColors);
-        glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
-        /*
-         glTranslatef(5, 5, 0);
-         glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
-         */
-    // Disable client states after drawing
-    //glDisableClientState(GL_VERTEX_ARRAY);
-    //glDisableClientState(GL_COLOR_ARRAY);
     
     glutSwapBuffers();
     glutPostRedisplay();
