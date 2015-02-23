@@ -140,9 +140,9 @@ int main(int argc, char** argv)
 
     /* Select clearing (background) color */
     glClearColor(0.0,0.0,0.0,0.0);
-    //glShadeModel(GL_FLAT);
-    glShadeModel(GL_SMOOTH); //ADDED NEW <<<
-    glEnable(GL_LIGHT0); // ADDED NEW <<<
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
 
     /* Register GLUT callback functions */
@@ -169,44 +169,17 @@ void display(void)
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
     
-    
-    
-    /* This is the code for the cube (Task 1)
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(fieldOfViewY,(GLdouble)windowDimensions[0]/(GLdouble)windowDimensions[1],1.5,20.0);
-    glMatrixMode(GL_MODELVIEW);
-    
-    computeMovement();
-    updateCamera();
-     */
-    
-    /*glEnableClientState(GL_VERTEX_ARRAY);
-     glEnableClientState(GL_COLOR_ARRAY);
-     glRotatef(cubeRotY,0,1,0);
-     glRotatef(cubeRotX,1,0,0);
-     glVertexPointer(3, GL_FLOAT, 0, cubeVertices);
-     glColorPointer(3,GL_FLOAT, 0, cubeColors);
-     glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
-     
-    // Disable client states after drawing
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-     
-     This is the end of the code for the cube */
-    
-    /* This is the code for the Spheres (Task 2) */
     gluLookAt(200.0,200.0,1000.0,200.0,200.0,0.0,0.0,1.0,0.0);
+    
+    setGlMaterial(0.0f,0.0f,1.0f,0.2,0.7,0.5,64);
+    glPushMatrix();
+    glTranslated(90,320,100);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
     
     setGlMaterial(0.0f,1.0f,0.0f,0.2,0.3,0.5,8);
     glPushMatrix();
     glTranslated(210,270,300);
-    glutSolidSphere(50,SPHERE_N,SPHERE_N);
-    glPopMatrix();
-    
-    setGlMaterial(0.0f,0.0f,1.0f,0.2f,0.7f,0.5f,64.0f);
-    glPushMatrix();
-    glTranslated(90,320,100);
     glutSolidSphere(50,SPHERE_N,SPHERE_N);
     glPopMatrix();
     
@@ -227,8 +200,6 @@ void display(void)
     glTranslated(110,130,200);
     glutSolidSphere(50,SPHERE_N,SPHERE_N);
     glPopMatrix();
-    /* This is the end of the code for the spheres */
-    
     
     glutSwapBuffers();
     glutPostRedisplay();
@@ -516,7 +487,6 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    //gluPerspective(fieldOfViewY,(GLdouble)w/(GLdouble)h,1.5,20.0);
     gluPerspective(2.0*atan2(h/2.0,1000.0)*180.0/M_PI,(GLdouble)w/(GLdouble)h,500,1000);
     glMatrixMode(GL_MODELVIEW);
     
@@ -527,10 +497,7 @@ void reshape(int w, int h)
 void showStartMessage()
 {
     puts("Computer Graphics Assignment - OpenGL:");
-    puts("W, S, A, D - Move through X and Z Axis;");
-    puts("Arrow Keys - Rotate the camera around the X and Y Axis;");
-    puts(", and . - Change the fovy of the perspective;");
-    puts("Mouse active movement - rotate the cube");
+    puts("This is a simulation of the Phong Lighting Model");
 }
 
 void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n)
