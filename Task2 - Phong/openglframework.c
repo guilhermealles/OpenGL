@@ -73,16 +73,16 @@ GLfloat cubeColors[] =
     0.0,1.0,0.0,
     1.0,0.5,0.0,
 };
-GLfloat cubeRotY = 0;
-GLfloat cubeRotX = 0;
+GLfloat spheresRotY = 0;
+GLfloat spheresRotX = 0;
 
 GLfloat fieldOfViewY = 60.0f;
 
 GLfloat rotY = 0; // Camera rotation aroud the y axis, in degrees
 GLfloat rotX = 90; // Camera rotation around the x axis, in degrees
 
-GLfloat eyePosition[3] = { 0.0f, 0.0f, 5.0f };
-GLfloat lookAtPosition[3] = { 0.0f, 0.0f, 0.0f };
+GLfloat eyePosition[3] = { 200.0, 200.0, 1000.0 };
+GLfloat lookAtPosition[3] = { 200.0, 200.0, 0.0 };
 GLfloat cameraUpVector[3] = { 0.0f, 1.0f, 0.0f };
 
 GLfloat old_x = 0, old_y = 0; // Stores the last mouse position
@@ -91,18 +91,9 @@ GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
-/*Light
-GLfloat mat_specular[] = {1.0,1.0,1.0,1.0};
-GLfloat mat_shininess[] = {50.0};
-GLfloat light_position[] = {1.0,1.0,1.0,0.0};
-glClearColor (0.0,0.0,0.0,0.0);
-
-glMaterialgv(GL_FRONT, GL_SPECULAR, mat_specular);
-glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-glLightfv(GL_LIGHT0, GL_POSITION, light_position);*/
-
 bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
 
+void setLight();
 void showStartMessage();
 void display(void);
 void updateCamera();
@@ -141,8 +132,6 @@ int main(int argc, char** argv)
     /* Select clearing (background) color */
     glClearColor(0.0,0.0,0.0,0.0);
     glShadeModel(GL_SMOOTH);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
 
     /* Register GLUT callback functions */
@@ -169,7 +158,12 @@ void display(void)
     glColor3f(0.0f,0.0f,1.0f);
     glLoadIdentity();
     
-    gluLookAt(200.0,200.0,1000.0,200.0,200.0,0.0,0.0,1.0,0.0);
+    computeMovement();
+    updateCamera();
+    setLight();
+    
+    glRotatef(spheresRotY,0,1,0);
+    glRotatef(spheresRotX,1,0,0);
     
     setGlMaterial(0.0f,0.0f,1.0f,0.2,0.7,0.5,64);
     glPushMatrix();
@@ -205,6 +199,24 @@ void display(void)
     glutPostRedisplay();
 }
 
+void setLight()
+{
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    
+    GLfloat mat_ambient[] = { 1.0,1.0,1.0,1.0 };
+    GLfloat mat_diffuse[] = { 1.0,1.0,1.0,1.0 };
+    GLfloat mat_specular[] = {1.0,1.0,1.0,1.0};
+    GLfloat light_position[] = {-200.0,600.0,1500.0, 1.0f};
+    glClearColor (0.0,0.0,0.0,0.0);
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    
+}
+
 void updateCamera()
 {
     lookAtPosition[0] = eyePosition[0] + sin(rotY*PI/180);
@@ -218,13 +230,13 @@ void computeMovement()
 {
     if (wPressed)
     {
-        eyePosition[0] += 0.025 * sin(rotY*PI/180);
-        eyePosition[2] += -0.025 * cos(rotY*PI/180);
+        eyePosition[0] += 10 * sin(rotY*PI/180);
+        eyePosition[2] += 10 * -cos(rotY*PI/180);
     }
     if (sPressed)
     {
-        eyePosition[0] -= 0.025 * sin(rotY*PI/180);
-        eyePosition[2] -= -0.025 * cos(rotY*PI/180);
+        eyePosition[0] -= 10 * sin(rotY*PI/180);
+        eyePosition[2] -= 10 * -cos(rotY*PI/180);
     }
     if (aPressed)
     {
@@ -237,14 +249,6 @@ void computeMovement()
         // Also not working correctly
         eyePosition[0] -= 0.025 * cos(rotY*PI/180);
         eyePosition[2] -= -0.025 * sin(rotY*PI/180);
-    }
-    if (iPressed)
-    {
-
-    }
-    if (kPressed)
-    {
-
     }
     if (upPressed)
     {
@@ -270,10 +274,6 @@ void computeMovement()
     {
         if (fieldOfViewY > 01.0f) fieldOfViewY -= 1;
     }
-    if (spacePressed)
-    {
-        
-    }
 }
 
 void onMouseDown (int x, int y)
@@ -290,19 +290,19 @@ void onMouseDown (int x, int y)
         
         if (delta_x > 0) // Went right
         {
-            cubeRotY += 2;
+            spheresRotY += 2;
         }
         if (delta_x < 0) // Went left
         {
-            cubeRotY -= 2;
+            spheresRotY -= 2;
         }
         if (delta_y > 0) // Went up
         {
-            cubeRotX += 2;
+            spheresRotX += 2;
         }
         if (delta_y < 0) // Went down
         {
-            cubeRotX -= 2;
+            spheresRotX -= 2;
         }
         old_x = x;
         old_y = y;
@@ -487,7 +487,7 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(2.0*atan2(h/2.0,1000.0)*180.0/M_PI,(GLdouble)w/(GLdouble)h,500,1000);
+    gluPerspective(2.0*atan2(h/2.0,1000.0)*180.0/M_PI,(GLdouble)w/(GLdouble)h,100,10000);
     glMatrixMode(GL_MODELVIEW);
     
     windowDimensions[0] = w;
@@ -497,7 +497,7 @@ void reshape(int w, int h)
 void showStartMessage()
 {
     puts("Computer Graphics Assignment - OpenGL:");
-    puts("This is a simulation of the Phong Lighting Model");
+    puts("This is a simulation of the Phong Lighting Mode");
 }
 
 void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n)
