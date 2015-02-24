@@ -23,5 +23,4 @@ void main (void)
    	spec = clamp ( gl_FrontMaterial.specular * pow(max(dot(R,E),0.0),gl_FrontMaterial.shininess) , 0.0, 1.0 );
     
     gl_FragColor = ambient + diffuse + spec;
-    //gl_FragColor = vec4(L,1.0);
 }
