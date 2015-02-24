@@ -456,7 +456,7 @@ void reshape(int w, int h)
 void showStartMessage()
 {
     puts("Computer Graphics Assignment - OpenGL:");
-    puts("This is a simulation of the Phong Lighting Mode");
+    puts("This is a simulation of the Phong Lighting Model");
 }
 
 void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n)
