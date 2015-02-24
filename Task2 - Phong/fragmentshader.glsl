@@ -1,3 +1,5 @@
+#version 120
+
 uniform vec4 ambientMat;
 uniform vec4 diffuseMat;
 uniform vec4 specMat;
@@ -5,7 +7,6 @@ uniform float specPow;
 
 varying vec3 N;
 varying vec3 v;
-
 void main (void)
 {
     vec4 diffuse;
@@ -16,11 +17,11 @@ void main (void)
     vec3 E = normalize(-v);
     vec3 R = normalize(reflect(-L,N));
     
-   	ambient = ambientMat;
+   	ambient = gl_FrontMaterial.ambient;
     
-    diffuse = clamp( diffuseMat * max(dot(N,L), 0.0)  , 0.0, 1.0 ) ;
-   	spec = clamp ( specMat * pow(max(dot(R,E),0.0),0.3*specPow) , 0.0, 1.0 );
+    diffuse = clamp( gl_FrontMaterial.diffuse * max(dot(N,L), 0.0)  , 0.0, 1.0 ) ;
+   	spec = clamp ( gl_FrontMaterial.specular * pow(max(dot(R,E),0.0),gl_FrontMaterial.shininess) , 0.0, 1.0 );
     
-    //gl_FragColor = vec4(0.5*normalize(N)+0.5,1.0);
     gl_FragColor = ambient + diffuse + spec;
+    //gl_FragColor = vec4(L,1.0);
 }
