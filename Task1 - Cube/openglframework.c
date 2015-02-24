@@ -99,6 +99,15 @@ void display(void);
 void updateCamera();
 void computeMovement();
 void onMouseDown(int x, int y);
+
+void computeKeyboardMovement();
+void onMouseDown(int x, int y);
+
+void computeMovement();
+
+void computeMovement();
+void onMouseDown(int x, int y);
+
 void onKeyDown(unsigned char key, int x, int y);
 void onKeyUp(unsigned char key, int x, int y);
 void onSpecialInputDown(int key, int x, int y);
@@ -143,7 +152,6 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutMotionFunc(onMouseDown);
     
-    
     glutSetCursor(GLUT_CURSOR_NONE);
     
     showStartMessage();
@@ -175,6 +183,9 @@ void display(void)
         glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndices);
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
+    
+    // Reset mouse position for next frame
+    //glutWarpPointer(windowDimensions[0]/2, windowDimensions[1]/2);
     
     glutSwapBuffers();
     glutPostRedisplay();
