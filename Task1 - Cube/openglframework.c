@@ -205,48 +205,41 @@ void computeMovement()
     if (wPressed)
     {
         eyePosition[0] += 0.025 * sin(rotY*PI/180);
-        eyePosition[2] += -0.025 * cos(rotY*PI/180);
+        eyePosition[2] -= 0.025 * cos(rotY*PI/180);
     }
     if (sPressed)
     {
         eyePosition[0] -= 0.025 * sin(rotY*PI/180);
-        eyePosition[2] -= -0.025 * cos(rotY*PI/180);
+        eyePosition[2] += 0.025 * cos(rotY*PI/180);
     }
     if (aPressed)
     {
-        // Not working correctly
-        eyePosition[0] += 0.025 * cos(rotY*PI/180);
-        eyePosition[2] += -0.025 * sin(rotY*PI/180);
+        eyePosition[0] -= 0.025 * cos(rotY*PI/180);
+        eyePosition[2] -= 0.025 * sin(rotY*PI/180);
+
     }
     if (dPressed)
     {
-        // Also not working correctly
-        eyePosition[0] -= 0.025 * cos(rotY*PI/180);
-        eyePosition[2] -= -0.025 * sin(rotY*PI/180);
-    }
-    if (iPressed)
-    {
-
-    }
-    if (kPressed)
-    {
-
+        eyePosition[0] += 0.025 * cos(rotY*PI/180);
+        eyePosition[2] += 0.025 * sin(rotY*PI/180);
     }
     if (upPressed)
     {
-        rotX += 4.0f;
+        if (rotX > 0)
+            rotX -= 2.0f;
     }
     if (downPressed)
     {
-        rotX -= 4.0f;
+        if (rotX < 180)
+            rotX += 2.0f;
     }
     if (leftPressed)
     {
-        rotY -= 4.0f;
+        rotY -= 2.0f;
     }
     if (rightPressed)
     {
-        rotY += 4.0f;
+        rotY += 2.0f;
     }
     if (dotPressed)
     {
@@ -255,10 +248,6 @@ void computeMovement()
     if (commaPressed)
     {
         if (fieldOfViewY > 01.0f) fieldOfViewY -= 1;
-    }
-    if (spacePressed)
-    {
-        
     }
 }
 
@@ -315,41 +304,6 @@ void onKeyDown(unsigned char key, int x, int y)
         case 'D':
             dPressed = true;
             break;
-        case ' ':
-            spacePressed = true;
-            break;
-        case 'i':
-        case 'I':
-            iPressed = true;
-            break;
-        case 'k':
-        case 'K':
-            kPressed = true;
-            break;
-        case 't':
-        case 'T':
-            tPressed = true;
-            break;
-        case 'g':
-        case 'G':
-            gPressed = true;
-            break;
-        case 'r':
-        case 'R':
-            rPressed = true;
-            break;
-        case 'y':
-        case 'Y':
-            yPressed = true;
-            break;
-        case 'h':
-        case 'H':
-            hPressed = true;
-            break;
-        case 'f':
-        case 'F':
-            fPressed = true;
-            break;
         case ',':
             commaPressed = true;
             break;
@@ -384,41 +338,6 @@ void onKeyUp(unsigned char key, int x, int y)
         case 'd':
         case 'D':
             dPressed = false;
-            break;
-        case ' ':
-            spacePressed = false;
-            break;
-        case 'i':
-        case 'I':
-            iPressed = false;
-            break;
-        case 'k':
-        case 'K':
-            kPressed = false;
-            break;
-        case 't':
-        case 'T':
-            tPressed = false;
-            break;
-        case 'g':
-        case 'G':
-            gPressed = false;
-            break;
-        case 'r':
-        case 'R':
-            rPressed = false;
-            break;
-        case 'y':
-        case 'Y':
-            yPressed = false;
-            break;
-        case 'h':
-        case 'H':
-            hPressed = false;
-            break;
-        case 'f':
-        case 'F':
-            fPressed = false;
             break;
         case ',':
             commaPressed = false;
@@ -483,8 +402,8 @@ void reshape(int w, int h)
 void showStartMessage()
 {
     puts("Computer Graphics Assignment - OpenGL:");
-    puts("W, S, A, D - Move through X and Z Axis;");
-    puts("Arrow Keys - Rotate the camera around the X and Y Axis;");
+    puts("W, S, A, D - Navigation;");
+    puts("Arrow Keys - Look around;");
     puts(", and . - Change the fovy of the perspective;");
     puts("Mouse active movement - rotate the cube");
 }

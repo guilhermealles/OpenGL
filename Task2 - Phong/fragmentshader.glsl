@@ -1,10 +1,5 @@
 #version 120
 
-uniform vec4 ambientMat;
-uniform vec4 diffuseMat;
-uniform vec4 specMat;
-uniform float specPow;
-
 varying vec3 N;
 varying vec3 v;
 void main (void)
@@ -18,7 +13,6 @@ void main (void)
     vec3 R = normalize(reflect(-L,N));
     
    	ambient = gl_FrontMaterial.ambient;
-    
     diffuse = clamp( gl_FrontMaterial.diffuse * max(dot(N,L), 0.0)  , 0.0, 1.0 ) ;
    	spec = clamp ( gl_FrontMaterial.specular * pow(max(dot(R,E),0.0),gl_FrontMaterial.shininess) , 0.0, 1.0 );
     
