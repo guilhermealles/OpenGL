@@ -31,6 +31,7 @@
 
 #define PI 3.14159265359
 #define SPHERE_N (20)
+#define FERMAT_RADIUS 10
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -58,10 +59,12 @@ GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
 bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
 
+unsigned int apertureSamples = 16;
+
 void setLight();
 void showStartMessage();
 void display(void);
-void updateCamera();
+void updateCamera(unsigned int spiralIndex);
 void computeMovement();
 void onMouseDown(int x, int y);
 void onKeyDown(unsigned char key, int x, int y);
@@ -78,7 +81,7 @@ int main(int argc, char** argv)
 #endif
 
     glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_ACCUM);
     glutInitWindowSize(windowDimensions[0],windowDimensions[1]);
     glutInitWindowPosition(220,100);
     glutCreateWindow("Computer Graphics - OpenGL framework");
@@ -121,49 +124,58 @@ int main(int argc, char** argv)
 
 void display(void)
 {
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glColor3f(0.0f,0.0f,1.0f);
-    glLoadIdentity();
+    glClear(GL_ACCUM_BUFFER_BIT);
     
-    computeMovement();
-    updateCamera();
-    setLight();
+    for (int i = 0; i < apertureSamples; i++)
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glColor3f(0.0f,0.0f,1.0f);
+        glLoadIdentity();
+        
+        computeMovement();
+        setLight();
+        updateCamera(i);
+        
+        glRotatef(spheresRotY,0,1,0);
+        glRotatef(spheresRotX,1,0,0);
+        
+        setGlMaterial(0.0f,0.0f,1.0f,0.2,0.7,0.5,64);
+        glPushMatrix();
+        glTranslated(90,320,100);
+        glutSolidSphere(50,SPHERE_N,SPHERE_N);
+        glPopMatrix();
+        
+        setGlMaterial(0.0f,1.0f,0.0f,0.2,0.3,0.5,8);
+        glPushMatrix();
+        glTranslated(210,270,300);
+        glutSolidSphere(50,SPHERE_N,SPHERE_N);
+        glPopMatrix();
+        
+        setGlMaterial(1.0f,0.0f,0.0f,0.2,0.7,0.8,32);
+        glPushMatrix();
+        glTranslated(290,170,150);
+        glutSolidSphere(50,SPHERE_N,SPHERE_N);
+        glPopMatrix();
+        
+        setGlMaterial(1.0f,0.8f,0.0f,0.2,0.8,0.0,1);
+        glPushMatrix();
+        glTranslated(140,220,400);
+        glutSolidSphere(50,SPHERE_N,SPHERE_N);
+        glPopMatrix();
+        
+        setGlMaterial(1.0f,0.5f,0.0f,0.2,0.8,0.5,32);
+        glPushMatrix();
+        glTranslated(110,130,200);
+        glutSolidSphere(50,SPHERE_N,SPHERE_N);
+        glPopMatrix();
+        
+        glAccum(GL_ACCUM, 1.0/(double)apertureSamples);
+    }
     
-    glRotatef(spheresRotY,0,1,0);
-    glRotatef(spheresRotX,1,0,0);
-    
-    setGlMaterial(0.0f,0.0f,1.0f,0.2,0.7,0.5,64);
-    glPushMatrix();
-    glTranslated(90,320,100);
-    glutSolidSphere(50,SPHERE_N,SPHERE_N);
-    glPopMatrix();
-    
-    setGlMaterial(0.0f,1.0f,0.0f,0.2,0.3,0.5,8);
-    glPushMatrix();
-    glTranslated(210,270,300);
-    glutSolidSphere(50,SPHERE_N,SPHERE_N);
-    glPopMatrix();
-    
-    setGlMaterial(1.0f,0.0f,0.0f,0.2,0.7,0.8,32);
-    glPushMatrix();
-    glTranslated(290,170,150);
-    glutSolidSphere(50,SPHERE_N,SPHERE_N);
-    glPopMatrix();
-    
-    setGlMaterial(1.0f,0.8f,0.0f,0.2,0.8,0.0,1);
-    glPushMatrix();
-    glTranslated(140,220,400);
-    glutSolidSphere(50,SPHERE_N,SPHERE_N);
-    glPopMatrix();
-    
-    setGlMaterial(1.0f,0.5f,0.0f,0.2,0.8,0.5,32);
-    glPushMatrix();
-    glTranslated(110,130,200);
-    glutSolidSphere(50,SPHERE_N,SPHERE_N);
-    glPopMatrix();
-    
-    glutSwapBuffers();
+    glAccum(GL_RETURN, 1.0);
+    glFlush();
     glutPostRedisplay();
+    glutSwapBuffers();
 }
 
 void setLight()
@@ -184,26 +196,39 @@ void setLight()
     
 }
 
-void updateCamera()
+void updateCamera(unsigned int spiralIndex)
 {
+    double n = ((double)spiralIndex / (apertureSamples - 1)) * 0.727230441568491;
+    double theta = n * 137.508;
+    double radius = 0.001 * sqrt(theta);
+    
+    double eyeDisplacementX = radius * cos(theta*PI/180);
+    double eyeDisplacementY = radius * sin(theta*PI/180);
+    
+    //printf("Theta: %f \t Displacement X: %f \t Displacement Y: %f\n", theta, eyeDisplacementX, eyeDisplacementY);
+    //printf("EyePosition: %f, %f, %f", eyePosition[0] + eyeDisplacementX, eyePosition[1] + eyeDisplacementY, eyePosition[2]);
+    //getchar();
+    
     lookAtPosition[0] = eyePosition[0] + sin(rotY*PI/180);
     lookAtPosition[1] = eyePosition[1] + cos(rotX*PI/180);
     lookAtPosition[2] = eyePosition[2] - cos(rotY*PI/180);
     
-    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],0.0f, 1.0f, 0.0f);
+    fflush(stdin);
+    
+    gluLookAt(eyePosition[0] + eyeDisplacementX, eyePosition[1] + eyeDisplacementY,eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],0.0f, 1.0f, 0.0f);
 }
 
 void computeMovement()
 {
     if (wPressed)
     {
-        eyePosition[0] += 10 * sin(rotY*PI/180);
-        eyePosition[2] += 10 * -cos(rotY*PI/180);
+        eyePosition[0] += 0.5 * sin(rotY*PI/180);
+        eyePosition[2] += 0.5 * -cos(rotY*PI/180);
     }
     if (sPressed)
     {
-        eyePosition[0] -= 10 * sin(rotY*PI/180);
-        eyePosition[2] -= 10 * -cos(rotY*PI/180);
+        eyePosition[0] -= 0.5 * sin(rotY*PI/180);
+        eyePosition[2] -= 0.5 * -cos(rotY*PI/180);
     }
     if (aPressed)
     {
@@ -219,19 +244,19 @@ void computeMovement()
     }
     if (upPressed)
     {
-        rotX += 4.0f;
+        rotX += 0.25f;
     }
     if (downPressed)
     {
-        rotX -= 4.0f;
+        rotX -= 0.25f;
     }
     if (leftPressed)
     {
-        rotY -= 4.0f;
+        rotY -= 0.25f;
     }
     if (rightPressed)
     {
-        rotY += 4.0f;
+        rotY += 0.25f;
     }
 }
 
