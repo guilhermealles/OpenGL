@@ -33,6 +33,7 @@
 #define SPHERE_N (20)
 #define FERMAT_RADIUS 10
 
+#include "glm.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -41,23 +42,20 @@
 
 GLuint windowDimensions[2] = { 400, 400 };
 
-GLfloat spheresRotY = 0;
-GLfloat spheresRotX = 0;
+GLfloat objectsRotY = 0;
+GLfloat objectsRotY = 0;
 
 
 GLfloat rotY = 0; // Camera rotation aroud the y axis, in degrees
 GLfloat rotX = 90; // Camera rotation around the x axis, in degrees
 
-GLfloat eyePosition[3] = { 200.0, 200.0, 1000.0 };
-GLfloat lookAtPosition[3] = { 200.0, 200.0, 0.0 };
+GLfloat eyePosition[3] = { 0.0, 0.0, 5.0 };
+GLfloat lookAtPosition[3] = { 0.0, 0.0, 0.0 };
 
 GLfloat old_x = 0, old_y = 0; // Stores the last mouse position
 GLfloat horizontal_angle = 0, vertical_angle = 0; // How far is the mouse from the center of the window
-GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
-GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
-GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
-bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
+bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, commaPressed=false, dotPressed=false;
 
 unsigned int apertureSamples = 16;
 
@@ -136,8 +134,8 @@ void display(void)
         setLight();
         updateCamera(i);
         
-        glRotatef(spheresRotY,0,1,0);
-        glRotatef(spheresRotX,1,0,0);
+        glRotatef(objectsRotY,0,1,0);
+        glRotatef(objectsRotX,1,0,0);
         
         setGlMaterial(0.0f,0.0f,1.0f,0.2,0.7,0.5,64);
         glPushMatrix();
@@ -222,25 +220,23 @@ void computeMovement()
 {
     if (wPressed)
     {
-        eyePosition[0] += 0.5 * sin(rotY*PI/180);
-        eyePosition[2] += 0.5 * -cos(rotY*PI/180);
+        eyePosition[0] += 0.25 * sin(rotY*PI/180);
+        eyePosition[2] -= 0.25 * -cos(rotY*PI/180);
     }
     if (sPressed)
     {
-        eyePosition[0] -= 0.5 * sin(rotY*PI/180);
-        eyePosition[2] -= 0.5 * -cos(rotY*PI/180);
+        eyePosition[0] -= 0.25 * sin(rotY*PI/180);
+        eyePosition[2] += 0.25 * -cos(rotY*PI/180);
     }
     if (aPressed)
     {
-        // Not working correctly
-        eyePosition[0] += 0.025 * cos(rotY*PI/180);
-        eyePosition[2] += -0.025 * sin(rotY*PI/180);
+        eyePosition[0] -= 0.025 * cos(rotY*PI/180);
+        eyePosition[2] -= 0.025 * sin(rotY*PI/180);
     }
     if (dPressed)
     {
-        // Also not working correctly
-        eyePosition[0] -= 0.025 * cos(rotY*PI/180);
-        eyePosition[2] -= -0.025 * sin(rotY*PI/180);
+        eyePosition[0] += 0.025 * cos(rotY*PI/180);
+        eyePosition[2] += 0.025 * sin(rotY*PI/180);
     }
     if (upPressed)
     {
@@ -274,19 +270,19 @@ void onMouseDown (int x, int y)
         
         if (delta_x > 0) // Went right
         {
-            spheresRotY += 2;
+            objectsRotY += 2;
         }
         if (delta_x < 0) // Went left
         {
-            spheresRotY -= 2;
+            objectsRotY -= 2;
         }
         if (delta_y > 0) // Went up
         {
-            spheresRotX += 2;
+            objectsRotX += 2;
         }
         if (delta_y < 0) // Went down
         {
-            spheresRotX -= 2;
+            objectsRotX -= 2;
         }
         old_x = x;
         old_y = y;
@@ -312,41 +308,6 @@ void onKeyDown(unsigned char key, int x, int y)
         case 'd':
         case 'D':
             dPressed = true;
-            break;
-        case ' ':
-            spacePressed = true;
-            break;
-        case 'i':
-        case 'I':
-            iPressed = true;
-            break;
-        case 'k':
-        case 'K':
-            kPressed = true;
-            break;
-        case 't':
-        case 'T':
-            tPressed = true;
-            break;
-        case 'g':
-        case 'G':
-            gPressed = true;
-            break;
-        case 'r':
-        case 'R':
-            rPressed = true;
-            break;
-        case 'y':
-        case 'Y':
-            yPressed = true;
-            break;
-        case 'h':
-        case 'H':
-            hPressed = true;
-            break;
-        case 'f':
-        case 'F':
-            fPressed = true;
             break;
         case ',':
             commaPressed = true;
@@ -382,41 +343,6 @@ void onKeyUp(unsigned char key, int x, int y)
         case 'd':
         case 'D':
             dPressed = false;
-            break;
-        case ' ':
-            spacePressed = false;
-            break;
-        case 'i':
-        case 'I':
-            iPressed = false;
-            break;
-        case 'k':
-        case 'K':
-            kPressed = false;
-            break;
-        case 't':
-        case 'T':
-            tPressed = false;
-            break;
-        case 'g':
-        case 'G':
-            gPressed = false;
-            break;
-        case 'r':
-        case 'R':
-            rPressed = false;
-            break;
-        case 'y':
-        case 'Y':
-            yPressed = false;
-            break;
-        case 'h':
-        case 'H':
-            hPressed = false;
-            break;
-        case 'f':
-        case 'F':
-            fPressed = false;
             break;
         case ',':
             commaPressed = false;
@@ -471,7 +397,7 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(2.0*atan2(h/2.0,1000.0)*180.0/M_PI,(GLdouble)w/(GLdouble)h,100,10000);
+    gluPerspective(fieldOfViewY,(GLdouble)w/(GLdouble)h,1.5,20.0);
     glMatrixMode(GL_MODELVIEW);
     
     windowDimensions[0] = w;
@@ -481,7 +407,6 @@ void reshape(int w, int h)
 void showStartMessage()
 {
     puts("Computer Graphics Assignment - OpenGL:");
-    puts("This is a simulation of the Phong Lighting Model");
 }
 
 void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n)
