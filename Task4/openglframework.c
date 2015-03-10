@@ -143,7 +143,7 @@ void display(void)
         glRotatef(objectsRotX,1,0,0);
         
         // Insert code for glmDraw here
-        glmDraw(modelPtr, GLM_SMOOTH | GLM_MATERIAL);
+        glmDraw(modelPtr, GLM_SMOOTH);
         
         glAccum(GL_ACCUM, 1.0/(double)apertureSamples);
     }
