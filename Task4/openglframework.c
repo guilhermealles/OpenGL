@@ -117,9 +117,9 @@ int main(int argc, char** argv)
     
     // Load OBJ model
     loadModel();
-    glmInitVBO(modelPtr, &bufferID);
+    glmInitVBO(modelPtr);
 
-    glutSetCursor(GLUT_CURSOR_NONE);
+    //glutSetCursor(GLUT_CURSOR_NONE);
     
     showStartMessage();
 
@@ -146,7 +146,7 @@ void display(void)
         
         // Insert code for glmDraw here
         //glmDraw(modelPtr, GLM_SMOOTH);
-        glmDrawVBO(modelPtr, GLM_SMOOTH, bufferID);
+        glmDrawVBO(modelPtr, GLM_SMOOTH);
         
         glAccum(GL_ACCUM, 1.0/(double)apertureSamples);
     }
@@ -378,7 +378,7 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0,(GLdouble)w/(GLdouble)h,1.5,20.0);
+    gluPerspective(60.0,(GLdouble)w/(GLdouble)h,0.1,20.0);
     glMatrixMode(GL_MODELVIEW);
     
     windowDimensions[0] = w;

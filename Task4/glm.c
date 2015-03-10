@@ -1754,16 +1754,45 @@ glmWeld(GLMmodel* model, GLfloat epsilon)
   return welded;
 }
 
-GLvoid glmInitVBO(GLMmodel* model, GLuint* bufferID)
+GLvoid glmInitVBO(GLMmodel* model)
 {
-    glGenBuffers(1, bufferID);
-    glBindBuffer(GL_ARRAY_BUFFER, *bufferID);
-    unsigned long long int x = model->numvertices * 3 * sizeof(GLfloat);
-    glBufferData(GL_ARRAY_BUFFER, x, model->vertices, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &(model->vertexVBO));
+    glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
+    glBufferData(GL_ARRAY_BUFFER, model->numvertices * 3 * sizeof(GLfloat), model->vertices, GL_DYNAMIC_DRAW);
+    /*
+    GLuint indices[model->numtriangles * 3];
+    for (unsigned long int i = 0; i < model->numtriangles; i++) {
+        indices[i*3] = model->triangles[i].vindices[0];
+        indices[i*3+1] = model->triangles[i].vindices[1];
+        indices[i*3+2] = model->triangles[i].vindices[2];
+    }
+    */
+
+    GLMgroup* group = model->groups;
+    unsigned long int totalTriangles = 0;
+    while (group) {
+        totalTriangles += group->numtriangles;
+        group = group->next;
+    }
+
+    GLuint indices[totalTriangles*3];
+    group = model->groups;
+    unsigned long int i = 0;
+    while (group) {
+        for (unsigned int subI = 0; subI < group->numtriangles*3; subI++) {
+            indices[i] = group->triangles[subI];
+            i++;
+        }
+        group = group->next;
+    }
+
+    glGenBuffers(1, &(model->indexVBO));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->indexVBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     return;
 }
 
-GLvoid glmDrawVBO(GLMmodel* model, GLuint mode, GLuint bufferID)
+GLvoid glmDrawVBO(GLMmodel* model, GLuint mode)
 {
     static GLuint i;
     static GLMgroup* group;
@@ -1833,16 +1862,11 @@ GLvoid glmDrawVBO(GLMmodel* model, GLuint mode, GLuint bufferID)
             //glColor3fv(material->diffuse);
         //}
 
-        GLuint verticesIndices[model->numvertices];
-        for (unsigned int i = 0; i < model->numvertices; i++)
-        {
-            verticesIndices[i] = i;
-        }
-
         glEnableClientState(GL_VERTEX_ARRAY);
-        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
         glVertexPointer(3, GL_FLOAT, 0, (char*) NULL);
-        glDrawElements(GL_POINTS, 3*model->numvertices, GL_UNSIGNED_BYTE, verticesIndices);
+        //glDrawElements(GL_POINTS, 3*model->numvertices, GL_UNSIGNED_BYTE, NULL);
+        glDrawArrays(GL_TRIANGLES, 0, 3*model->numvertices);
         glDisableClientState(GL_VERTEX_ARRAY);
 
         /*
@@ -1863,6 +1887,7 @@ GLvoid glmDrawVBO(GLMmodel* model, GLuint mode, GLuint bufferID)
                 glNormal3fv(&model->normals[3 * triangle->nindices[1]]);
             if (mode & GLM_TEXTURE)
                 glTexCoord2fv(&model->texcoords[2 * triangle->tindices[1]]);
+
             glVertex3fv(&model->vertices[3 * triangle->vindices[1]]);
       
             if (mode & GLM_SMOOTH)

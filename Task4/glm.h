@@ -100,6 +100,9 @@ typedef struct _GLMmodel {
 
   GLfloat position[3];			/* position of the model */
 
+  GLuint vertexVBO;
+  GLuint indexVBO;
+
 } GLMmodel;
 
 
@@ -261,11 +264,11 @@ glmWeld(GLMmodel* model, GLfloat epsilon);
 
     
 GLvoid
-glmInitVBO(GLMmodel* model, GLuint* bufferID);
+glmInitVBO(GLMmodel* model);
 
     
 GLvoid
-glmDrawVBO(GLMmodel* model, GLuint mode, GLuint bufferID);
+glmDrawVBO(GLMmodel* model, GLuint mode);
 
 #ifdef __cplusplus
 }
