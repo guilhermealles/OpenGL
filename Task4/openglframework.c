@@ -42,9 +42,8 @@
 
 GLuint windowDimensions[2] = { 400, 400 };
 
+GLfloat objectsRotX = 0;
 GLfloat objectsRotY = 0;
-GLfloat objectsRotY = 0;
-
 
 GLfloat rotY = 0; // Camera rotation aroud the y axis, in degrees
 GLfloat rotX = 90; // Camera rotation around the x axis, in degrees
@@ -59,6 +58,9 @@ bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, upPressed=f
 
 unsigned int apertureSamples = 16;
 
+GLMmodel *modelPtr;
+#define MODEL_FILENAME "obj/devilduk.obj"
+
 void setLight();
 void showStartMessage();
 void display(void);
@@ -71,7 +73,7 @@ void onSpecialInputDown(int key, int x, int y);
 void onSpecialInputUp(int key, int x, int y);
 void reshape(int w, int h);
 void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n);
-
+void loadModel();
 int main(int argc, char** argv)
 {
 #if defined(NEED_GLEW)
@@ -111,6 +113,9 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutMotionFunc(onMouseDown);
     
+    // Load OBJ model
+    loadModel();
+    
     
     glutSetCursor(GLUT_CURSOR_NONE);
     
@@ -137,35 +142,8 @@ void display(void)
         glRotatef(objectsRotY,0,1,0);
         glRotatef(objectsRotX,1,0,0);
         
-        setGlMaterial(0.0f,0.0f,1.0f,0.2,0.7,0.5,64);
-        glPushMatrix();
-        glTranslated(90,320,100);
-        glutSolidSphere(50,SPHERE_N,SPHERE_N);
-        glPopMatrix();
-        
-        setGlMaterial(0.0f,1.0f,0.0f,0.2,0.3,0.5,8);
-        glPushMatrix();
-        glTranslated(210,270,300);
-        glutSolidSphere(50,SPHERE_N,SPHERE_N);
-        glPopMatrix();
-        
-        setGlMaterial(1.0f,0.0f,0.0f,0.2,0.7,0.8,32);
-        glPushMatrix();
-        glTranslated(290,170,150);
-        glutSolidSphere(50,SPHERE_N,SPHERE_N);
-        glPopMatrix();
-        
-        setGlMaterial(1.0f,0.8f,0.0f,0.2,0.8,0.0,1);
-        glPushMatrix();
-        glTranslated(140,220,400);
-        glutSolidSphere(50,SPHERE_N,SPHERE_N);
-        glPopMatrix();
-        
-        setGlMaterial(1.0f,0.5f,0.0f,0.2,0.8,0.5,32);
-        glPushMatrix();
-        glTranslated(110,130,200);
-        glutSolidSphere(50,SPHERE_N,SPHERE_N);
-        glPopMatrix();
+        // Insert code for glmDraw here
+        glmDraw(modelPtr, GLM_SMOOTH | GLM_MATERIAL);
         
         glAccum(GL_ACCUM, 1.0/(double)apertureSamples);
     }
@@ -220,23 +198,23 @@ void computeMovement()
 {
     if (wPressed)
     {
-        eyePosition[0] += 0.25 * sin(rotY*PI/180);
-        eyePosition[2] -= 0.25 * -cos(rotY*PI/180);
+        eyePosition[0] -= 0.005 * sin(rotY*PI/180);
+        eyePosition[2] += 0.005 * -cos(rotY*PI/180);
     }
     if (sPressed)
     {
-        eyePosition[0] -= 0.25 * sin(rotY*PI/180);
-        eyePosition[2] += 0.25 * -cos(rotY*PI/180);
+        eyePosition[0] += 0.005 * sin(rotY*PI/180);
+        eyePosition[2] -= 0.005 * -cos(rotY*PI/180);
     }
     if (aPressed)
     {
-        eyePosition[0] -= 0.025 * cos(rotY*PI/180);
-        eyePosition[2] -= 0.025 * sin(rotY*PI/180);
+        eyePosition[0] -= 0.005 * cos(rotY*PI/180);
+        eyePosition[2] -= 0.005 * sin(rotY*PI/180);
     }
     if (dPressed)
     {
-        eyePosition[0] += 0.025 * cos(rotY*PI/180);
-        eyePosition[2] += 0.025 * sin(rotY*PI/180);
+        eyePosition[0] += 0.005 * cos(rotY*PI/180);
+        eyePosition[2] += 0.005 * sin(rotY*PI/180);
     }
     if (upPressed)
     {
@@ -397,7 +375,7 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(fieldOfViewY,(GLdouble)w/(GLdouble)h,1.5,20.0);
+    gluPerspective(60.0,(GLdouble)w/(GLdouble)h,1.5,20.0);
     glMatrixMode(GL_MODELVIEW);
     
     windowDimensions[0] = w;
@@ -418,4 +396,18 @@ void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfl
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, n);
+}
+
+void loadModel() {
+    if (!modelPtr) {
+        modelPtr = glmReadOBJ(MODEL_FILENAME);
+        if (!modelPtr) {
+            puts ("Error when loading model!!");
+            exit(0);
+        }
+        
+        glmUnitize(modelPtr);
+        glmFacetNormals(modelPtr);
+        glmVertexNormals(modelPtr, 90.0);
+    }
 }
