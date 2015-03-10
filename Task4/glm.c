@@ -1754,6 +1754,129 @@ glmWeld(GLMmodel* model, GLfloat epsilon)
   return welded;
 }
 
+GLvoid glmInitVBO(GLMmodel* model, GLuint* bufferID)
+{
+    glGenBuffers(1, bufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, *bufferID);
+    unsigned long long int x = model->numvertices * 3 * sizeof(GLfloat);
+    glBufferData(GL_ARRAY_BUFFER, x, model->vertices, GL_DYNAMIC_DRAW);
+    return;
+}
+
+GLvoid glmDrawVBO(GLMmodel* model, GLuint mode, GLuint bufferID)
+{
+    static GLuint i;
+    static GLMgroup* group;
+    static GLMtriangle* triangle;
+    static GLMmaterial* material;
+
+    assert(model);
+    assert(model->vertices);
+
+    /* do a bit of warning */
+    if (mode & GLM_FLAT && !model->facetnorms) {
+        printf("glmDraw() warning: flat render mode requested " "with no facet normals defined.\n");
+        mode &= ~GLM_FLAT;
+    }
+    if (mode & GLM_SMOOTH && !model->normals) {
+        printf("glmDraw() warning: smooth render mode requested "
+        "with no normals defined.\n");
+        mode &= ~GLM_SMOOTH;
+    }
+    if (mode & GLM_TEXTURE && !model->texcoords) {
+        printf("glmDraw() warning: texture render mode requested "
+        "with no texture coordinates defined.\n");
+        mode &= ~GLM_TEXTURE;
+    }
+    if (mode & GLM_FLAT && mode & GLM_SMOOTH) {
+        printf("glmDraw() warning: flat render mode requested "
+        "and smooth render mode requested (using smooth).\n");
+        mode &= ~GLM_FLAT;
+    }
+    if (mode & GLM_COLOR && !model->materials) {
+        printf("glmDraw() warning: color render mode requested "
+        "with no materials defined.\n");
+        mode &= ~GLM_COLOR;
+    }
+    if (mode & GLM_MATERIAL && !model->materials) {
+        printf("glmDraw() warning: material render mode requested "
+        "with no materials defined.\n");
+        mode &= ~GLM_MATERIAL;
+    }
+    if (mode & GLM_COLOR && mode & GLM_MATERIAL) {
+        printf("glmDraw() warning: color and material render mode requested "
+        "using only material mode.\n");
+        mode &= ~GLM_COLOR;
+    }
+    if (mode & GLM_COLOR)
+        glEnable(GL_COLOR_MATERIAL);
+    else if (mode & GLM_MATERIAL)
+        glDisable(GL_COLOR_MATERIAL);
+
+    /* perhaps this loop should be unrolled into material, color, flat,
+        smooth, etc. loops?  since most cpu's have good branch prediction
+        schemes (and these branches will always go one way), probably
+        wouldn't gain too much?  */
+
+    //group = model->groups;
+    //while (group) {
+        //if (mode & GLM_MATERIAL) {
+            //material = &model->materials[group->material];
+            //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material->ambient);
+            //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material->diffuse);
+            //glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material->specular);
+            //glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material->shininess);
+        //}
+
+        //if (mode & GLM_COLOR) {
+            //material = &model->materials[group->material];
+            //glColor3fv(material->diffuse);
+        //}
+
+        GLuint verticesIndices[model->numvertices];
+        for (unsigned int i = 0; i < model->numvertices; i++)
+        {
+            verticesIndices[i] = i;
+        }
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+        glVertexPointer(3, GL_FLOAT, 0, (char*) NULL);
+        glDrawElements(GL_POINTS, 3*model->numvertices, GL_UNSIGNED_BYTE, verticesIndices);
+        glDisableClientState(GL_VERTEX_ARRAY);
+
+        /*
+        glBegin(GL_TRIANGLES);
+        for (i = 0; i < group->numtriangles; i++) {
+            triangle = &T(group->triangles[i]);
+
+            if (mode & GLM_FLAT)
+                glNormal3fv(&model->facetnorms[3 * triangle->findex]);
+      
+            if (mode & GLM_SMOOTH)
+                glNormal3fv(&model->normals[3 * triangle->nindices[0]]);
+            if (mode & GLM_TEXTURE)
+                glTexCoord2fv(&model->texcoords[2 * triangle->tindices[0]]);
+            glVertex3fv(&model->vertices[3 * triangle->vindices[0]]);
+      
+            if (mode & GLM_SMOOTH)
+                glNormal3fv(&model->normals[3 * triangle->nindices[1]]);
+            if (mode & GLM_TEXTURE)
+                glTexCoord2fv(&model->texcoords[2 * triangle->tindices[1]]);
+            glVertex3fv(&model->vertices[3 * triangle->vindices[1]]);
+      
+            if (mode & GLM_SMOOTH)
+                glNormal3fv(&model->normals[3 * triangle->nindices[2]]);
+            if (mode & GLM_TEXTURE)
+                glTexCoord2fv(&model->texcoords[2 * triangle->tindices[2]]);
+            glVertex3fv(&model->vertices[3 * triangle->vindices[2]]);
+        }
+        glEnd();
+        */
+
+        //group = group->next;
+    //}
+}
 
 #if 0
   /* normals */

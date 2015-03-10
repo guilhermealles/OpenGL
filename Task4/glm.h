@@ -259,6 +259,13 @@ glmList(GLMmodel* model, GLuint mode);
 GLuint
 glmWeld(GLMmodel* model, GLfloat epsilon);
 
+    
+GLvoid
+glmInitVBO(GLMmodel* model, GLuint* bufferID);
+
+    
+GLvoid
+glmDrawVBO(GLMmodel* model, GLuint mode, GLuint bufferID);
 
 #ifdef __cplusplus
 }

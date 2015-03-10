@@ -61,6 +61,8 @@ unsigned int apertureSamples = 16;
 GLMmodel *modelPtr;
 #define MODEL_FILENAME "obj/devilduk.obj"
 
+GLuint bufferID;
+
 void setLight();
 void showStartMessage();
 void display(void);
@@ -115,8 +117,8 @@ int main(int argc, char** argv)
     
     // Load OBJ model
     loadModel();
-    
-    
+    glmInitVBO(modelPtr, &bufferID);
+
     glutSetCursor(GLUT_CURSOR_NONE);
     
     showStartMessage();
@@ -143,7 +145,8 @@ void display(void)
         glRotatef(objectsRotX,1,0,0);
         
         // Insert code for glmDraw here
-        glmDraw(modelPtr, GLM_SMOOTH);
+        //glmDraw(modelPtr, GLM_SMOOTH);
+        glmDrawVBO(modelPtr, GLM_SMOOTH, bufferID);
         
         glAccum(GL_ACCUM, 1.0/(double)apertureSamples);
     }
