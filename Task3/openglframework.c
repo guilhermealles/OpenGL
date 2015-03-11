@@ -38,7 +38,7 @@
 #define SPHERE_N (20)
 
 #define FERMAT_RADIUS 10                // Maximum radius of the sphere. The bigger, the more distorted the image is.
-#define ATTENUATION_CONSTANT 0.001      // The bigger the value, the more distorted the image is. The displacement of the camera is very high even
+#define ATTENUATION_CONSTANT 0.0008      // The bigger the value, the more distorted the image is. The displacement of the camera is very high even
                                         // when this constant is very low, so minimal change in this value will cause very big impact on the final image.
 GLfloat maximumN;
 
