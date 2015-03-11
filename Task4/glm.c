@@ -1788,7 +1788,7 @@ GLvoid glmInitVBO(GLMmodel* model)
 
     glGenBuffers(1, &(model->indexVBO));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->indexVBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
     return;
 }
 
