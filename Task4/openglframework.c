@@ -146,6 +146,7 @@ void display(void)
         
         // Insert code for glmDraw here
         //glmDraw(modelPtr, GLM_SMOOTH);
+        glmInitVBO(modelPtr);
         glmDrawVBO(modelPtr, GLM_SMOOTH);
         
         glAccum(GL_ACCUM, 1.0/(double)apertureSamples);

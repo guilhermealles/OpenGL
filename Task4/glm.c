@@ -1866,7 +1866,7 @@ GLvoid glmDrawVBO(GLMmodel* model, GLuint mode)
         glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
         glVertexPointer(3, GL_FLOAT, 0, (char*) NULL);
         //glDrawElements(GL_POINTS, 3*model->numvertices, GL_UNSIGNED_BYTE, NULL);
-        glDrawArrays(GL_TRIANGLES, 0, 3*model->numvertices);
+        glDrawArrays(GL_POINTS, 0, 3*model->numvertices);
         glDisableClientState(GL_VERTEX_ARRAY);
 
         /*
