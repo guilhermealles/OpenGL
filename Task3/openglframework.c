@@ -29,21 +29,24 @@
 #include <GL/glut.h>
 #endif
 
-#define PI 3.14159265359
-#define SPHERE_N (20)
-#define FERMAT_RADIUS 10
-
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
+#define PI 3.14159265359
+#define SPHERE_N (20)
+
+#define FERMAT_RADIUS 10                // Maximum radius of the sphere. The bigger, the more distorted the image is.
+#define ATTENUATION_CONSTANT 0.001      // The bigger the value, the more distorted the image is. The displacement of the camera is very high even
+                                        // when this constant is very low, so minimal change in this value will cause very big impact on the final image.
+GLfloat maximumN;
 
 
 GLuint windowDimensions[2] = { 400, 400 };
 
 GLfloat spheresRotY = 0;
 GLfloat spheresRotX = 0;
-
 
 GLfloat rotY = 0; // Camera rotation aroud the y axis, in degrees
 GLfloat rotX = 90; // Camera rotation around the x axis, in degrees
@@ -57,7 +60,7 @@ GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
 GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
-bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
+bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
 
 unsigned int apertureSamples = 16;
 
@@ -118,6 +121,9 @@ int main(int argc, char** argv)
     
     showStartMessage();
 
+    //Calculate maximum N for the spiral displacement (Depth of Field)
+    maximumN = pow(FERMAT_RADIUS, 2)/137.508f;
+    
     glutMainLoop();
     return 0;
 }
@@ -198,22 +204,16 @@ void setLight()
 
 void updateCamera(unsigned int spiralIndex)
 {
-    double n = ((double)spiralIndex / (apertureSamples - 1)) * 0.727230441568491;
+    double n = ((double)spiralIndex / (apertureSamples - 1)) * maximumN;
     double theta = n * 137.508;
-    double radius = 0.001 * sqrt(theta);
+    double radius = ATTENUATION_CONSTANT * sqrt(theta);
     
     double eyeDisplacementX = radius * cos(theta*PI/180);
     double eyeDisplacementY = radius * sin(theta*PI/180);
     
-    //printf("Theta: %f \t Displacement X: %f \t Displacement Y: %f\n", theta, eyeDisplacementX, eyeDisplacementY);
-    //printf("EyePosition: %f, %f, %f", eyePosition[0] + eyeDisplacementX, eyePosition[1] + eyeDisplacementY, eyePosition[2]);
-    //getchar();
-    
     lookAtPosition[0] = eyePosition[0] + sin(rotY*PI/180);
     lookAtPosition[1] = eyePosition[1] + cos(rotX*PI/180);
     lookAtPosition[2] = eyePosition[2] - cos(rotY*PI/180);
-    
-    fflush(stdin);
     
     gluLookAt(eyePosition[0] + eyeDisplacementX, eyePosition[1] + eyeDisplacementY,eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],0.0f, 1.0f, 0.0f);
 }
@@ -313,47 +313,6 @@ void onKeyDown(unsigned char key, int x, int y)
         case 'D':
             dPressed = true;
             break;
-        case ' ':
-            spacePressed = true;
-            break;
-        case 'i':
-        case 'I':
-            iPressed = true;
-            break;
-        case 'k':
-        case 'K':
-            kPressed = true;
-            break;
-        case 't':
-        case 'T':
-            tPressed = true;
-            break;
-        case 'g':
-        case 'G':
-            gPressed = true;
-            break;
-        case 'r':
-        case 'R':
-            rPressed = true;
-            break;
-        case 'y':
-        case 'Y':
-            yPressed = true;
-            break;
-        case 'h':
-        case 'H':
-            hPressed = true;
-            break;
-        case 'f':
-        case 'F':
-            fPressed = true;
-            break;
-        case ',':
-            commaPressed = true;
-            break;
-        case '.':
-            dotPressed = true;
-            break;
         case 'q':
         case 'Q':
         case 27: // ESC key
@@ -382,47 +341,6 @@ void onKeyUp(unsigned char key, int x, int y)
         case 'd':
         case 'D':
             dPressed = false;
-            break;
-        case ' ':
-            spacePressed = false;
-            break;
-        case 'i':
-        case 'I':
-            iPressed = false;
-            break;
-        case 'k':
-        case 'K':
-            kPressed = false;
-            break;
-        case 't':
-        case 'T':
-            tPressed = false;
-            break;
-        case 'g':
-        case 'G':
-            gPressed = false;
-            break;
-        case 'r':
-        case 'R':
-            rPressed = false;
-            break;
-        case 'y':
-        case 'Y':
-            yPressed = false;
-            break;
-        case 'h':
-        case 'H':
-            hPressed = false;
-            break;
-        case 'f':
-        case 'F':
-            fPressed = false;
-            break;
-        case ',':
-            commaPressed = false;
-            break;
-        case '.':
-            dotPressed = false;
             break;
     }
 
