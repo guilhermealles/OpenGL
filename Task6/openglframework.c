@@ -31,6 +31,7 @@
 
 #define PI 3.14159265359
 #define SPHERE_N (35)
+#define NUMBER_OF_SPHERES 5
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -38,13 +39,10 @@
 #include <math.h>
 #include "lodepng.h"
 
-
 GLuint windowDimensions[2] = { 800, 800 };
 
 GLfloat eyePosition[3] = { 0, 0, 10 };
 GLfloat lookAtPosition[3] = { 0, 0, 0 };
-
-GLuint texture;
 
 void initQuadric();
 void setLight();
@@ -57,6 +55,10 @@ void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfl
 GLuint initTexture(char *filename);
 
 GLUquadric *quadric;
+GLuint texture[NUMBER_OF_SPHERES];
+GLdouble rotationAngle = 0.0;
+bool lastWasPlus = true;
+GLdouble displacementX = 0.0;
 
 int main(int argc, char** argv)
 {
@@ -92,8 +94,13 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     
     glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL,GL_SEPARATE_SPECULAR_COLOR);
-    texture = initTexture("textures/earth.png");
     initQuadric();
+    
+    texture[0] = initTexture("textures/earth.png");
+    texture[1] = initTexture("textures/texture1.png");
+    texture[2] = initTexture("textures/texture2.png");
+    texture[3] = initTexture("textures/texture3.png");
+    texture[4] = initTexture("textures/texture4.png");
     
     glutSetCursor(GLUT_CURSOR_NONE);
     
@@ -112,15 +119,86 @@ void display(void)
     updateCamera();
     setLight();
     
-    setGlMaterial(1.0f,0.5f,0.0f,0.2,0.8,0.5,32);
+    
+    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
     glPushMatrix();
-    glTranslated(0.0, 0.0, -20.0);
+    glTranslated(0.0+displacementX, 0.0, -20.0);
+    glRotated(rotationAngle, 1.0,1.0,1.0);
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D,texture);
-    gluSphere(quadric, 5,SPHERE_N,SPHERE_N);
+    glBindTexture(GL_TEXTURE_2D,texture[0]);
+    gluSphere(quadric, 2,SPHERE_N,SPHERE_N);
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
+    
+    
+    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
+    glPushMatrix();
+    glTranslated(0.0+displacementX, 5.0, -20.0);
+    glRotated(rotationAngle, 1.0,-1.0,1.0);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D,texture[1]);
+    gluSphere(quadric, 2,SPHERE_N,SPHERE_N);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    
+    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
+    glPushMatrix();
+    glTranslated(0.0+displacementX, -5.0, -20.0);
+    glRotated(rotationAngle, -1.0,1.0,1.0);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D,texture[2]);
+    gluSphere(quadric, 2,SPHERE_N,SPHERE_N);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    
+    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
+    glPushMatrix();
+    glTranslated(5.0+displacementX, 0.0, -20.0);
+    glRotated(rotationAngle, 1.0,1.0,-1.0);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D,texture[3]);
+    gluSphere(quadric, 2,SPHERE_N,SPHERE_N);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    
+    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
+    glPushMatrix();
+    glTranslated(-5.0+displacementX, 0.0, -20.0);
+    glRotated(rotationAngle, -1.0,-1.0,-1.0);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+    glBindTexture(GL_TEXTURE_2D,texture[4]);
+    gluSphere(quadric, 2,SPHERE_N,SPHERE_N);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    rotationAngle++;
+    if (lastWasPlus) {
+        displacementX+= 0.1;
+    }
+    else {
+        displacementX-=0.1;
+    }
+    if (displacementX >= 2.5 && lastWasPlus) {
+        lastWasPlus = false;
+    }
+    else if (displacementX >= 2.5 && !lastWasPlus) {
+        displacementX-=0.1;
+    }
+    else if (displacementX <= -2.5 && !lastWasPlus) {
+        lastWasPlus = true;
+    }
+    else if (displacementX <= -2.5 && lastWasPlus) {
+        displacementX +=0.1;
+    }
+    
     
     glutSwapBuffers();
     glutPostRedisplay();
@@ -142,7 +220,7 @@ void setLight()
     GLfloat mat_ambient[] = { 1.0,1.0,1.0,1.0 };
     GLfloat mat_diffuse[] = { 1.0,1.0,1.0,1.0 };
     GLfloat mat_specular[] = {1.0,1.0,1.0,1.0};
-    GLfloat light_position[] = {0, 10, -5, 1.0f};
+    GLfloat light_position[] = {0, 7, -5, 1.0f};
     glClearColor (0.0,0.0,0.0,0.0);
 
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
