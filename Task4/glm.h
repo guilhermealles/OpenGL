@@ -101,6 +101,7 @@ typedef struct _GLMmodel {
   GLfloat position[3];			/* position of the model */
 
   GLuint vertexVBO;
+  GLuint vertexVBO2;
   GLuint indexVBO;
 
 } GLMmodel;
