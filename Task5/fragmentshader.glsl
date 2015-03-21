@@ -1,65 +1,49 @@
 #version 120
 
-uniform vec3  SurfaceColor; // (0.75, 0.75, 0.75)
-uniform vec3  WarmColor;    // (0.6, 0.6, 0.0)
-uniform vec3  CoolColor;    // (0.0, 0.0, 0.6)
-uniform float DiffuseWarm;  // 0.45
-uniform float DiffuseCool;  // 0.45
+uniform vec3 ambient;
 
-varying float NdotL;
-varying vec3  ReflectVec;
-varying vec3  ViewVec;
-
-void main()
-{
-    vec3 kcool    = min(CoolColor + DiffuseCool * SurfaceColor, 1.0);
-    vec3 kwarm    = min(WarmColor + DiffuseWarm * SurfaceColor, 1.0);
-    vec3 kfinal   = mix(kcool, kwarm, NdotL);
-    
-    vec3 nreflect = normalize(ReflectVec);
-    vec3 nview    = normalize(ViewVec);
-    
-    float spec    = max(dot(nreflect, nview), 0.0);
-    spec          = pow(spec, 32.0);
-    
-    gl_FragColor = vec4(min(kfinal + spec, 1.0), 1.0);
-}
-
-
-
-/*
 varying vec3 normal;
-varying vec3 v;
-vec4 k_cool;
-vec4 k_warm;
-vec4 k_final;
+varying vec3 lightVec;
+varying vec3 viewVec;
 
-
-void main (void)
-{
-    // Parameters
-    vec4 cool_color = vec4(0, 0, 0.6, 1.0);
-    vec4 warm_color = vec4(0.6, 0.6, 0, 1.0);
+void main() {
+    const float b = 0.55;
+    const float y = 0.3;
+    const float Ka = 1.0;
+    const float Kd = 0.8;
+    const float Ks = 0.9;
+    
+    vec3 specularColor = vec3(1.0,1.0,1.0);
+    
+    vec3 norm = normalize(normal);
+    vec3 L = normalize(lightVec);
+    vec3 V = normalize(viewVec);
+    vec3 halfAngle = normalize(L+V);
+    //vec3 orange = vec3(.88,.81,.49);
+    //vec3 purple = vec3(.58,.10,.76);
+    vec4 blue = vec4(0.0, 0.0, 0.1, 1.0);
+    vec4 yellow = vec4(0.4, 0.4, 0.0, 1.0);
+    
     float alpha = 0.45;
     float beta = 0.45;
     
-    vec3 light_vector = normalize(gl_LightSource[0].position.xyz - v);
-    //vec3 E = normalize(-v);
-    vec3 reflection_vector = normalize(reflect(- light_vector, normal));
-    normalize(normal);
+    vec4 kCool = blue + alpha * gl_FrontMaterial.diffuse ;
+    vec4 kWarm = yellow + beta * gl_FrontMaterial.diffuse;
     
-    // b and y determine the strength of the overall temperature shift. Both between 0 and 1.
-    // alpha and beta will determine the prominence of the object color and the strength of the luminance shift.
-    float diffuse_component = dot(normal, light_vector);
+    //float spec = dot();
+   
+    /*
+    float NdotL = dot(L,norm);
+    float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
+    float specular = pow(NdotH, 64.0);
     
-    k_cool = cool_color + alpha * gl_FrontMaterial.diffuse;
-    k_warm = warm_color + beta * gl_FrontMaterial.diffuse;
-    k_final = mix(k_cool, k_warm, diffuse_component);
+    float blendval = 0.5 * NdotL + 0.5;
+    vec3 Cgooch = mix(kWarm, kCool, blendval);
     
-    float specular_component = max (dot (reflection_vector, normalize(v)), 0.0);
-    specular_component = pow (specular_component, 32.0);
+    vec3 result = Kd * Cgooch + specularColor * Ks * specular;
+     */
     
-    gl_FragColor = vec4 (min(k_final + specular_component, 1.0));
+    vec4 result = vec4(kCool + kWarm);
     
+    gl_FragColor = result;
 }
-*/
