@@ -19,13 +19,11 @@ void main() {
     vec3 L = normalize(lightVec);
     vec3 V = normalize(viewVec);
     vec3 halfAngle = normalize(L+V);
-    //vec3 orange = vec3(.88,.81,.49);
-    //vec3 purple = vec3(.58,.10,.76);
     vec4 blue = vec4(0.0, 0.0, 0.1, 1.0);
     vec4 yellow = vec4(0.4, 0.4, 0.0, 1.0);
     
-    float alpha = 0.45;
-    float beta = 0.45;
+    float alpha = 0.25;
+    float beta = 0.5;
     
     vec4 kCool = blue + alpha * gl_FrontMaterial.diffuse ;
     vec4 kWarm = yellow + beta * gl_FrontMaterial.diffuse;
