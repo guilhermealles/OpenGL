@@ -1756,39 +1756,19 @@ glmWeld(GLMmodel* model, GLfloat epsilon)
 
 GLvoid glmInitVBO(GLMmodel* model)
 {
+    GLfloat vertices[3 * model->numtriangles];
+    
+    for (unsigned int i= 0; i < model->numtriangles; i++)
+    {
+        vertices[i*3] = model->vertices[model->triangles[i].vindices[0]];
+        vertices[i*3+1] = model->vertices[model->triangles[i].vindices[1]];
+        vertices[i*3+2] = model->vertices[model->triangles[i].vindices[2]];
+    }
+    
     glGenBuffers(1, &(model->vertexVBO));
     glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
-    glBufferData(GL_ARRAY_BUFFER, model->numvertices * 3 * sizeof(GLfloat), model->vertices, GL_DYNAMIC_DRAW);
-    /*
-    GLuint indices[model->numtriangles * 3];
-    for (unsigned long int i = 0; i < model->numtriangles; i++) {
-        indices[i*3] = model->triangles[i].vindices[0];
-        indices[i*3+1] = model->triangles[i].vindices[1];
-        indices[i*3+2] = model->triangles[i].vindices[2];
-    }
-    */
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
-    GLMgroup* group = model->groups;
-    unsigned long int totalTriangles = 0;
-    while (group) {
-        totalTriangles += group->numtriangles;
-        group = group->next;
-    }
-
-    GLuint indices[totalTriangles*3];
-    group = model->groups;
-    unsigned long int i = 0;
-    while (group) {
-        for (unsigned int subI = 0; subI < group->numtriangles*3; subI++) {
-            indices[i] = group->triangles[subI];
-            i++;
-        }
-        group = group->next;
-    }
-
-    glGenBuffers(1, &(model->indexVBO));
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->indexVBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     return;
 }
 
@@ -1847,61 +1827,15 @@ GLvoid glmDrawVBO(GLMmodel* model, GLuint mode)
         schemes (and these branches will always go one way), probably
         wouldn't gain too much?  */
 
-    //group = model->groups;
-    //while (group) {
-        //if (mode & GLM_MATERIAL) {
-            //material = &model->materials[group->material];
-            //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material->ambient);
-            //glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material->diffuse);
-            //glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material->specular);
-            //glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material->shininess);
-        //}
-
-        //if (mode & GLM_COLOR) {
-            //material = &model->materials[group->material];
-            //glColor3fv(material->diffuse);
-        //}
-
         glEnableClientState(GL_VERTEX_ARRAY);
+    
         glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
-        glVertexPointer(3, GL_FLOAT, 0, (char*) NULL);
-        //glDrawElements(GL_POINTS, 3*model->numvertices, GL_UNSIGNED_BYTE, NULL);
-        glDrawArrays(GL_TRIANGLES, 0, 3*model->numvertices);
+    
+        glVertexPointer(3, GL_FLOAT, 0, (char*)NULL);
+        //glDrawElements(GL_POINTS, 3*model->numvertices, GL_UNSIGNED_INT, NULL);
+        glDrawArrays(GL_POINTS, 0, 3*model->numtriangles);
         glDisableClientState(GL_VERTEX_ARRAY);
-
-        /*
-        glBegin(GL_TRIANGLES);
-        for (i = 0; i < group->numtriangles; i++) {
-            triangle = &T(group->triangles[i]);
-
-            if (mode & GLM_FLAT)
-                glNormal3fv(&model->facetnorms[3 * triangle->findex]);
-      
-            if (mode & GLM_SMOOTH)
-                glNormal3fv(&model->normals[3 * triangle->nindices[0]]);
-            if (mode & GLM_TEXTURE)
-                glTexCoord2fv(&model->texcoords[2 * triangle->tindices[0]]);
-            glVertex3fv(&model->vertices[3 * triangle->vindices[0]]);
-      
-            if (mode & GLM_SMOOTH)
-                glNormal3fv(&model->normals[3 * triangle->nindices[1]]);
-            if (mode & GLM_TEXTURE)
-                glTexCoord2fv(&model->texcoords[2 * triangle->tindices[1]]);
-
-            glVertex3fv(&model->vertices[3 * triangle->vindices[1]]);
-      
-            if (mode & GLM_SMOOTH)
-                glNormal3fv(&model->normals[3 * triangle->nindices[2]]);
-            if (mode & GLM_TEXTURE)
-                glTexCoord2fv(&model->texcoords[2 * triangle->tindices[2]]);
-            glVertex3fv(&model->vertices[3 * triangle->vindices[2]]);
-        }
-        glEnd();
-        */
-
-        //group = group->next;
-    //}
-}
+    }
 
 #if 0
   /* normals */

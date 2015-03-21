@@ -15,14 +15,13 @@ char * readTextFile(FILE * fp)
 	rewind(fp);
 	text = (char*)calloc(numChars+1, sizeof(char));
 	size_t numRead = fread(text, sizeof(char), numChars, fp);
-	
-    if (numRead != numChars)
-    {
+	if (numRead != numChars) {
 		fprintf(stderr,"Error reading from file.\n");
 	}
     text[numChars] = 0;
 	return text;
 }
+
 
 /* Create shader instance and read source from file system */ 
 GLuint loadShader(const char * srcPath, GLenum shaderType)
@@ -41,9 +40,7 @@ void checkCompileStatus(int shader, const char * srcPath)
 	glCompileShader(shader);
 	int compileStatus;
 	glGetShaderiv(shader,GL_COMPILE_STATUS,&compileStatus);
-	
-    if (compileStatus==GL_FALSE)
-    {
+	if (compileStatus==GL_FALSE) {
 		fprintf(stderr,"Error, unable to compile shader: %s\n",srcPath);
 		int logSize;
 		glGetShaderiv(shader,GL_INFO_LOG_LENGTH,&logSize);

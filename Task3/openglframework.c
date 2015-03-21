@@ -76,6 +76,7 @@ void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfl
 
 int main(int argc, char** argv)
 {
+
 #if defined(NEED_GLEW)
     GLenum err;
 #endif
@@ -89,7 +90,9 @@ int main(int argc, char** argv)
 #if defined(NEED_GLEW)
     /* Init GLEW if needed */
     err = glewInit();
-    if (GLEW_OK != err) {
+    
+    if (GLEW_OK != err)
+    {
         /* Problem: glewInit failed, something is seriously wrong. */
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
         exit(1);
@@ -112,7 +115,6 @@ int main(int argc, char** argv)
     glutSpecialUpFunc(onSpecialInputUp);
     glutReshapeFunc(reshape);
     glutMotionFunc(onMouseDown);
-    
     
     glutSetCursor(GLUT_CURSOR_NONE);
     

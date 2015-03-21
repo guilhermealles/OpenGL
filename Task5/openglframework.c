@@ -31,9 +31,7 @@
 
 #define PI 3.14159265359
 #define SPHERE_N (20)
-#define FERMAT_RADIUS 10
 
-#include "glm.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -42,31 +40,28 @@
 
 GLuint windowDimensions[2] = { 400, 400 };
 
-GLfloat objectsRotX = 0;
-GLfloat objectsRotY = 0;
+GLfloat spheresRotY = 0;
+GLfloat spheresRotX = 0;
+
 
 GLfloat rotY = 0; // Camera rotation aroud the y axis, in degrees
 GLfloat rotX = 90; // Camera rotation around the x axis, in degrees
 
-GLfloat eyePosition[3] = { 0.0, 0.0, 5.0 };
-GLfloat lookAtPosition[3] = { 0.0, 0.0, 0.0 };
+GLfloat eyePosition[3] = { 200.0, 200.0, 1000.0 };
+GLfloat lookAtPosition[3] = { 200.0, 200.0, 0.0 };
 
 GLfloat old_x = 0, old_y = 0; // Stores the last mouse position
 GLfloat horizontal_angle = 0, vertical_angle = 0; // How far is the mouse from the center of the window
+GLfloat direction_vector[3] = {0.0f, 0.0f, 0.0f};
+GLfloat right_vector[3] = {0.0f, 0.0f, 0.0f};
+GLfloat up_vector[3] = {0.0f, 0.0f, 0.0f};
 
-bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, commaPressed=false, dotPressed=false;
-
-unsigned int apertureSamples = 16;
-
-GLMmodel *modelPtr;
-#define MODEL_FILENAME "obj/devilduk.obj"
-
-GLuint bufferID;
+bool wPressed=false, sPressed=false, aPressed=false, dPressed=false, iPressed=false, kPressed=false, tPressed=false, gPressed=false, fPressed=false, hPressed=false, rPressed=false, yPressed=false, upPressed=false, downPressed=false, leftPressed=false, rightPressed=false, spacePressed=false, commaPressed=false, dotPressed=false;
 
 void setLight();
 void showStartMessage();
 void display(void);
-void updateCamera(unsigned int spiralIndex);
+void updateCamera();
 void computeMovement();
 void onMouseDown(int x, int y);
 void onKeyDown(unsigned char key, int x, int y);
@@ -75,7 +70,6 @@ void onSpecialInputDown(int key, int x, int y);
 void onSpecialInputUp(int key, int x, int y);
 void reshape(int w, int h);
 void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n);
-void loadModel();
 
 int main(int argc, char** argv)
 {
@@ -84,7 +78,7 @@ int main(int argc, char** argv)
 #endif
 
     glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_ACCUM);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowDimensions[0],windowDimensions[1]);
     glutInitWindowPosition(220,100);
     glutCreateWindow("Computer Graphics - OpenGL framework");
@@ -92,9 +86,7 @@ int main(int argc, char** argv)
 #if defined(NEED_GLEW)
     /* Init GLEW if needed */
     err = glewInit();
-    
-    if (GLEW_OK != err)
-    {
+    if (GLEW_OK != err) {
         /* Problem: glewInit failed, something is seriously wrong. */
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
         exit(1);
@@ -118,11 +110,6 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutMotionFunc(onMouseDown);
     
-    // Load OBJ model
-    loadModel();
-    glmInitVBO(modelPtr);
-
-    //glutSetCursor(GLUT_CURSOR_NONE);
     
     glutSetCursor(GLUT_CURSOR_NONE);
     
@@ -134,32 +121,49 @@ int main(int argc, char** argv)
 
 void display(void)
 {
-    glClear(GL_ACCUM_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glColor3f(0.0f,0.0f,1.0f);
+    glLoadIdentity();
     
-    for (int i = 0; i < apertureSamples; i++)
-    {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glColor3f(0.0f,0.0f,1.0f);
-        glLoadIdentity();
-        
-        computeMovement();
-        setLight();
-        updateCamera(i);
-        
-        glRotatef(objectsRotY,0,1,0);
-        glRotatef(objectsRotX,1,0,0);
-        
-        // Insert code for glmDraw here
-        //glmDraw(modelPtr, GLM_SMOOTH);
-        glmDrawVBO(modelPtr, GLM_SMOOTH);
-        
-        glAccum(GL_ACCUM, 1.0/(double)apertureSamples);
-    }
+    computeMovement();
+    updateCamera();
+    setLight();
     
-    glAccum(GL_RETURN, 1.0);
-    glFlush();
-    glutPostRedisplay();
+    glRotatef(spheresRotY,0,1,0);
+    glRotatef(spheresRotX,1,0,0);
+    
+    setGlMaterial(0.0f,0.0f,1.0f,0.2,0.7,0.5,64);
+    glPushMatrix();
+    glTranslated(90,320,100);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(0.0f,1.0f,0.0f,0.2,0.3,0.5,8);
+    glPushMatrix();
+    glTranslated(210,270,300);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(1.0f,0.0f,0.0f,0.2,0.7,0.8,32);
+    glPushMatrix();
+    glTranslated(290,170,150);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(1.0f,0.8f,0.0f,0.2,0.8,0.0,1);
+    glPushMatrix();
+    glTranslated(140,220,400);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
+    setGlMaterial(1.0f,0.5f,0.0f,0.2,0.8,0.5,32);
+    glPushMatrix();
+    glTranslated(110,130,200);
+    glutSolidSphere(50,SPHERE_N,SPHERE_N);
+    glPopMatrix();
+    
     glutSwapBuffers();
+    glutPostRedisplay();
 }
 
 void setLight()
@@ -180,65 +184,54 @@ void setLight()
     
 }
 
-void updateCamera(unsigned int spiralIndex)
+void updateCamera()
 {
-    double n = ((double)spiralIndex / (apertureSamples - 1)) * 0.727230441568491;
-    double theta = n * 137.508;
-    double radius = 0.001 * sqrt(theta);
-    
-    double eyeDisplacementX = radius * cos(theta*PI/180);
-    double eyeDisplacementY = radius * sin(theta*PI/180);
-    
-    //printf("Theta: %f \t Displacement X: %f \t Displacement Y: %f\n", theta, eyeDisplacementX, eyeDisplacementY);
-    //printf("EyePosition: %f, %f, %f", eyePosition[0] + eyeDisplacementX, eyePosition[1] + eyeDisplacementY, eyePosition[2]);
-    //getchar();
-    
     lookAtPosition[0] = eyePosition[0] + sin(rotY*PI/180);
     lookAtPosition[1] = eyePosition[1] + cos(rotX*PI/180);
     lookAtPosition[2] = eyePosition[2] - cos(rotY*PI/180);
     
-    fflush(stdin);
-    
-    gluLookAt(eyePosition[0] + eyeDisplacementX, eyePosition[1] + eyeDisplacementY,eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],0.0f, 1.0f, 0.0f);
+    gluLookAt(eyePosition[0],eyePosition[1],eyePosition[2],lookAtPosition[0],lookAtPosition[1],lookAtPosition[2],0.0f, 1.0f, 0.0f);
 }
 
 void computeMovement()
 {
     if (wPressed)
     {
-        eyePosition[0] -= 0.005 * sin(rotY*PI/180);
-        eyePosition[2] += 0.005 * -cos(rotY*PI/180);
+        eyePosition[0] += 10 * sin(rotY*PI/180);
+        eyePosition[2] += 10 * -cos(rotY*PI/180);
     }
     if (sPressed)
     {
-        eyePosition[0] += 0.005 * sin(rotY*PI/180);
-        eyePosition[2] -= 0.005 * -cos(rotY*PI/180);
+        eyePosition[0] -= 10 * sin(rotY*PI/180);
+        eyePosition[2] -= 10 * -cos(rotY*PI/180);
     }
     if (aPressed)
     {
-        eyePosition[0] -= 0.005 * cos(rotY*PI/180);
-        eyePosition[2] -= 0.005 * sin(rotY*PI/180);
+        // Not working correctly
+        eyePosition[0] += 0.025 * cos(rotY*PI/180);
+        eyePosition[2] += -0.025 * sin(rotY*PI/180);
     }
     if (dPressed)
     {
-        eyePosition[0] += 0.005 * cos(rotY*PI/180);
-        eyePosition[2] += 0.005 * sin(rotY*PI/180);
+        // Also not working correctly
+        eyePosition[0] -= 0.025 * cos(rotY*PI/180);
+        eyePosition[2] -= -0.025 * sin(rotY*PI/180);
     }
     if (upPressed)
     {
-        rotX += 0.25f;
+        rotX += 4.0f;
     }
     if (downPressed)
     {
-        rotX -= 0.25f;
+        rotX -= 4.0f;
     }
     if (leftPressed)
     {
-        rotY -= 0.25f;
+        rotY -= 4.0f;
     }
     if (rightPressed)
     {
-        rotY += 0.25f;
+        rotY += 4.0f;
     }
 }
 
@@ -256,19 +249,19 @@ void onMouseDown (int x, int y)
         
         if (delta_x > 0) // Went right
         {
-            objectsRotY += 2;
+            spheresRotY += 2;
         }
         if (delta_x < 0) // Went left
         {
-            objectsRotY -= 2;
+            spheresRotY -= 2;
         }
         if (delta_y > 0) // Went up
         {
-            objectsRotX += 2;
+            spheresRotX += 2;
         }
         if (delta_y < 0) // Went down
         {
-            objectsRotX -= 2;
+            spheresRotX -= 2;
         }
         old_x = x;
         old_y = y;
@@ -294,6 +287,41 @@ void onKeyDown(unsigned char key, int x, int y)
         case 'd':
         case 'D':
             dPressed = true;
+            break;
+        case ' ':
+            spacePressed = true;
+            break;
+        case 'i':
+        case 'I':
+            iPressed = true;
+            break;
+        case 'k':
+        case 'K':
+            kPressed = true;
+            break;
+        case 't':
+        case 'T':
+            tPressed = true;
+            break;
+        case 'g':
+        case 'G':
+            gPressed = true;
+            break;
+        case 'r':
+        case 'R':
+            rPressed = true;
+            break;
+        case 'y':
+        case 'Y':
+            yPressed = true;
+            break;
+        case 'h':
+        case 'H':
+            hPressed = true;
+            break;
+        case 'f':
+        case 'F':
+            fPressed = true;
             break;
         case ',':
             commaPressed = true;
@@ -329,6 +357,41 @@ void onKeyUp(unsigned char key, int x, int y)
         case 'd':
         case 'D':
             dPressed = false;
+            break;
+        case ' ':
+            spacePressed = false;
+            break;
+        case 'i':
+        case 'I':
+            iPressed = false;
+            break;
+        case 'k':
+        case 'K':
+            kPressed = false;
+            break;
+        case 't':
+        case 'T':
+            tPressed = false;
+            break;
+        case 'g':
+        case 'G':
+            gPressed = false;
+            break;
+        case 'r':
+        case 'R':
+            rPressed = false;
+            break;
+        case 'y':
+        case 'Y':
+            yPressed = false;
+            break;
+        case 'h':
+        case 'H':
+            hPressed = false;
+            break;
+        case 'f':
+        case 'F':
+            fPressed = false;
             break;
         case ',':
             commaPressed = false;
@@ -383,7 +446,7 @@ void reshape(int w, int h)
     glViewport(0,0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0,(GLdouble)w/(GLdouble)h,0.1,20.0);
+    gluPerspective(2.0*atan2(h/2.0,1000.0)*180.0/M_PI,(GLdouble)w/(GLdouble)h,100,10000);
     glMatrixMode(GL_MODELVIEW);
     
     windowDimensions[0] = w;
@@ -393,6 +456,7 @@ void reshape(int w, int h)
 void showStartMessage()
 {
     puts("Computer Graphics Assignment - OpenGL:");
+    puts("This is a simulation of the Phong Lighting Model");
 }
 
 void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfloat ks, GLfloat n)
@@ -404,22 +468,4 @@ void setGlMaterial(GLfloat r, GLfloat g, GLfloat b, GLfloat ka, GLfloat kd, GLfl
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, n);
-}
-
-void loadModel()
-{
-    if (!modelPtr)
-    {
-        modelPtr = glmReadOBJ(MODEL_FILENAME);
-        
-        if (!modelPtr)
-        {
-            puts ("Error when loading model!!");
-            exit(0);
-        }
-        
-        glmUnitize(modelPtr);
-        glmFacetNormals(modelPtr);
-        glmVertexNormals(modelPtr, 90.0);
-    }
 }
