@@ -50,8 +50,8 @@ typedef struct _planet {
 
 GLuint windowDimensions[2] = { 1000, 1000 };
 
-GLfloat eyePosition[3] = { 0, 0, 10 };
-GLfloat lookAtPosition[3] = { 0, 0, 0 };
+GLfloat eyePosition[3] = { 0, 0, 0 };
+GLfloat lookAtPosition[3] = { 0, 0, -30 };
 
 Planet planets[6];
 
@@ -61,7 +61,7 @@ void updatePlanets();
 void setLight();
 void showStartMessage();
 void display(void);
-void displaySolarSystem(void);
+void display2(void);
 void updateCamera();
 void onKeyDown(unsigned char key, int x, int y);
 void reshape(int w, int h);
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
     glEnable(GL_DEPTH_TEST);
     
     /* Register GLUT callback functions */
-    glutDisplayFunc(displaySolarSystem);
+    glutDisplayFunc(display2);
     glutKeyboardFunc(onKeyDown);
     glutReshapeFunc(reshape);
     
@@ -126,88 +126,64 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void displaySolarSystem(void) {
+void display2(void) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glColor3f(0.0f,0.0f,1.0f);
-    glLoadIdentity();
     
+    updatePlanets();
     updateCamera();
     setLight();
     
-    // Sun
-    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
-    glPushMatrix();
-    glTranslated(planets[0].position[0], planets[0].position[1], planets[0].position[2]);
-    glRotated(planets[0].rotationAngle, 1.0,1.0,1.0);
+    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.7,0,64);
+    
     glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D,texture[0]);
-    gluSphere(quadric, planets[0].radius,SPHERE_N,SPHERE_N);
-    glDisable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    
+    glLoadIdentity();
+    glPushMatrix();
+        // Sun
+        glTranslated(planets[0].position[0], planets[0].position[1], planets[0].position[2]);
+        glPushMatrix();
+            // Planet 1
+            glTranslated(planets[1].position[0], planets[1].position[1], 0.0);
+            glBindTexture(GL_TEXTURE_2D, texture[1]);
+            glRotated(planets[1].rotationAngle, 1.0, -1.0, 1.0);
+            gluSphere(quadric, planets[1].radius, SPHERE_N, SPHERE_N);
+        glPopMatrix();
+        glPushMatrix();
+            // Planet 2
+            glTranslated(planets[2].position[0], planets[2].position[1], 0.0);
+            glBindTexture(GL_TEXTURE_2D, texture[2]);
+            glRotated(planets[2].rotationAngle, -1.0, 1.0, 1.0);
+            gluSphere(quadric, planets[2].radius, SPHERE_N, SPHERE_N);
+        glPopMatrix();
+        glPushMatrix();
+            // Earth
+            glTranslated(planets[3].position[0], planets[3].position[1], 0.0);
+            glPushMatrix();
+                // Moon
+                glTranslated(planets[5].position[0], planets[5].position[1], 0.0);
+                glBindTexture(GL_TEXTURE_2D, texture[5]);
+                glRotated(planets[5].rotationAngle, 1.0, 1.0, -1.0);
+                gluSphere(quadric, planets[5].radius, SPHERE_N, SPHERE_N);
+            glPopMatrix();
+            glBindTexture(GL_TEXTURE_2D, texture[3]);
+            glRotated(planets[3].rotationAngle, 1.0, 1.0, -1.0);
+            gluSphere(quadric, planets[3].radius, SPHERE_N, SPHERE_N);
+        glPopMatrix();
+        glPushMatrix();
+            // Mars
+            glTranslated(planets[4].position[0], planets[4].position[1], 0.0);
+            glBindTexture(GL_TEXTURE_2D, texture[4]);
+            glRotated(planets[4].rotationAngle, 1.0, 0.0, 1.0);
+            gluSphere(quadric, planets[4].radius, SPHERE_N, SPHERE_N);
+        glPopMatrix();
+        setGlMaterial(1.0f,1.0f,1.0f,1.0,1.0,0.1,64);
+        glBindTexture(GL_TEXTURE_2D, texture[0]);
+        glRotated(planets[0].rotationAngle, 1.0,1.0,1.0);
+        gluSphere(quadric, planets[0].radius, SPHERE_N, SPHERE_N);
     glPopMatrix();
     
-    // Planet 1
-    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
-    glPushMatrix();
-    glTranslated(planets[1].position[0], planets[1].position[1], planets[1].position[2]);
-    glRotated(planets[1].rotationAngle, 1.0,-1.0,1.0);
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D,texture[1]);
-    gluSphere(quadric, planets[1].radius,SPHERE_N,SPHERE_N);
     glDisable(GL_TEXTURE_2D);
-    glPopMatrix();
-    
-    // Planet 2
-    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
-    glPushMatrix();
-    glTranslated(planets[2].position[0], planets[2].position[1], planets[2].position[2]);
-    glRotated(planets[2].rotationAngle, -1.0,1.0,1.0);
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D,texture[2]);
-    gluSphere(quadric, planets[2].radius,SPHERE_N,SPHERE_N);
-    glDisable(GL_TEXTURE_2D);
-    glPopMatrix();
-    
-    // Earth
-    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
-    glPushMatrix();
-    glTranslated(planets[3].position[0], planets[3].position[1], planets[3].position[2]);
-    glRotated(planets[3].rotationAngle, 1.0,1.0,-1.0);
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D,texture[3]);
-    gluSphere(quadric, planets[3].radius,SPHERE_N,SPHERE_N);
-    glDisable(GL_TEXTURE_2D);
-    
-    // Moon
-    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
-    glTranslated(planets[5].position[0], planets[5].position[1], planets[5].position[2]);
-    glRotated(planets[5].rotationAngle, 1.0,1.0,-1.0);
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D,texture[5]);
-    gluSphere(quadric, planets[5].radius,SPHERE_N,SPHERE_N);
-    glDisable(GL_TEXTURE_2D);
-    
-    glPopMatrix();
-    
-    // Mars
-    setGlMaterial(1.0f,1.0f,1.0f,1.0,0.8,0.1,64);
-    glPushMatrix();
-    glTranslated(planets[4].position[0], planets[4].position[1], planets[4].position[2]);
-    glRotated(planets[4].rotationAngle, -1.0,-1.0,-1.0);
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glBindTexture(GL_TEXTURE_2D,texture[4]);
-    gluSphere(quadric, planets[4].radius,SPHERE_N,SPHERE_N);
-    glDisable(GL_TEXTURE_2D);
-    glPopMatrix();
-    
-
-    
-    updatePlanets();
     
     glutSwapBuffers();
     glutPostRedisplay();
@@ -323,7 +299,7 @@ void setLight()
     GLfloat mat_ambient[] = { 1.0,1.0,1.0,1.0 };
     GLfloat mat_diffuse[] = { 1.0,1.0,1.0,1.0 };
     GLfloat mat_specular[] = {1.0,1.0,1.0,1.0};
-    GLfloat light_position[] = {0, 7, -5, 1.0f};
+    GLfloat light_position[] = {0, 0, -20, 1.0f};
     glClearColor (0.0,0.0,0.0,0.0);
     
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
@@ -419,45 +395,45 @@ void initPlanets() {
     
     planets[1].radius = 1.0;
     planets[1].distanceFromRefPoint = 4.0;
-    planets[1].position[0] = planets[1].distanceFromRefPoint * cos(planets[1].phi) * sin(planets[1].theta);
-    planets[1].position[1] = planets[1].distanceFromRefPoint * sin(planets[1].phi) * sin(planets[1].theta);
-    planets[1].position[2] = -30 + planets[1].distanceFromRefPoint * cos(planets[1].theta);
+    planets[1].position[0] = planets[1].distanceFromRefPoint * cos(planets[1].theta);
+    planets[1].position[1] = planets[1].distanceFromRefPoint * sin(planets[1].theta);
+    planets[1].position[2] = -30;
     planets[1].rotationAngle = 0;
     planets[1].theta = 0;
     planets[1].phi = 0;
     
     planets[2].radius = 0.6;
     planets[2].distanceFromRefPoint = 6.5;
-    planets[2].position[0] = planets[2].distanceFromRefPoint * cos(planets[2].phi) * sin(planets[2].theta);
-    planets[2].position[1] = planets[2].distanceFromRefPoint * sin(planets[2].phi) * sin(planets[2].theta);
-    planets[2].position[2] = -30 + planets[2].distanceFromRefPoint * cos(planets[2].theta);
+    planets[2].position[0] = planets[2].distanceFromRefPoint * cos(planets[2].theta);
+    planets[2].position[1] = planets[2].distanceFromRefPoint * sin(planets[2].theta);
+    planets[2].position[2] = -30;
     planets[2].rotationAngle = 0;
     planets[2].theta = 0;
     planets[2].phi = 0;
     
     planets[3].radius = 1.2;
     planets[3].distanceFromRefPoint = 9.5;
-    planets[3].position[0] = planets[3].distanceFromRefPoint * cos(planets[3].phi) * sin(planets[3].theta);
-    planets[3].position[1] = planets[3].distanceFromRefPoint * sin(planets[3].phi) * sin(planets[3].theta);
-    planets[3].position[2] = -30 + planets[3].distanceFromRefPoint * cos(planets[3].theta);
+    planets[3].position[0] = planets[3].distanceFromRefPoint * cos(planets[3].theta);
+    planets[3].position[1] = planets[3].distanceFromRefPoint * sin(planets[3].theta);
+    planets[3].position[2] = -30;
     planets[3].rotationAngle = 0;
-    planets[3].theta = 0;
+    planets[3].theta = 90;
     planets[3].phi = 0;
     
     planets[4].radius = 1.6;
     planets[4].distanceFromRefPoint = 14.0;
-    planets[4].position[0] = planets[4].distanceFromRefPoint * cos(planets[4].phi) * sin(planets[4].theta);
-    planets[4].position[1] = planets[4].distanceFromRefPoint * sin(planets[4].phi) * sin(planets[4].theta);
-    planets[4].position[2] = -30 + planets[4].distanceFromRefPoint * cos(planets[4].theta);
+    planets[4].position[0] = planets[4].distanceFromRefPoint * cos(planets[4].theta);
+    planets[4].position[1] = planets[4].distanceFromRefPoint * sin(planets[4].theta);
+    planets[4].position[2] = -30;
     planets[4].rotationAngle = 0;
     planets[4].theta = 0;
     planets[4].phi = 0;
     
-    planets[5].radius = 0.6;
-    planets[5].distanceFromRefPoint = 0.02;
-    planets[5].position[0] = planets[5].distanceFromRefPoint * cos(planets[5].phi) * sin(planets[5].theta);
-    planets[5].position[1] = planets[5].distanceFromRefPoint * sin(planets[5].phi) * sin(planets[5].theta);
-    planets[5].position[2] = -30 + planets[5].distanceFromRefPoint * cos(planets[5].theta);
+    planets[5].radius = 0.3;
+    planets[5].distanceFromRefPoint = 2;
+    planets[5].position[0] = planets[5].distanceFromRefPoint * cos(planets[5].theta);
+    planets[5].position[1] = planets[5].distanceFromRefPoint * sin(planets[5].theta);
+    planets[5].position[2] = -30;
     planets[5].rotationAngle = 0;
     planets[5].theta = 0;
     planets[5].phi = 0;
@@ -467,38 +443,33 @@ void updatePlanets() {
     planets[0].rotationAngle += 0.15;
     
     planets[1].rotationAngle += 0.2;
-    planets[1].phi += 0.01;
     planets[1].theta += 0.01;
-    planets[1].position[0] = planets[1].distanceFromRefPoint * cos(planets[1].phi) * sin(planets[1].theta);
-    planets[1].position[1] = planets[1].distanceFromRefPoint * sin(planets[1].phi) * sin(planets[1].theta);
-    planets[1].position[2] = -30 + planets[1].distanceFromRefPoint * cos(planets[1].theta);
+    planets[1].position[0] = planets[1].distanceFromRefPoint * cos(planets[1].theta);
+    planets[1].position[1] = planets[1].distanceFromRefPoint * sin(planets[1].theta);
+    planets[1].position[2] = -30;
     
     planets[2].rotationAngle += 1;
-    planets[2].phi += 0.015;
     planets[2].theta -= 0.013;
-    planets[2].position[0] = planets[2].distanceFromRefPoint * cos(planets[2].phi) * sin(planets[2].theta);
-    planets[2].position[1] = planets[2].distanceFromRefPoint * sin(planets[2].phi) * sin(planets[2].theta);
-    planets[2].position[2] = -30 + planets[2].distanceFromRefPoint * cos(planets[2].theta);
+    planets[2].position[0] = planets[2].distanceFromRefPoint * cos(planets[2].theta);
+    planets[2].position[1] = planets[2].distanceFromRefPoint * sin(planets[2].theta);
+    planets[2].position[2] = -30;
     
     planets[3].rotationAngle += 0.75;
-    planets[3].phi += 0.0073;
     planets[3].theta += 0.0082;
-    planets[3].position[0] = planets[3].distanceFromRefPoint * cos(planets[3].phi) * sin(planets[3].theta);
-    planets[3].position[1] = planets[3].distanceFromRefPoint * sin(planets[3].phi) * sin(planets[3].theta);
-    planets[3].position[2] = -30 + planets[3].distanceFromRefPoint * cos(planets[3].theta);
+    planets[3].position[0] = planets[3].distanceFromRefPoint * cos(planets[3].theta);
+    planets[3].position[1] = planets[3].distanceFromRefPoint * sin(planets[3].theta);
+    planets[3].position[2] = -30;
     
     planets[4].rotationAngle += 0.5;
-    planets[4].phi += 0.003;
     planets[4].theta -= 0.0042;
-    planets[4].position[0] = planets[4].distanceFromRefPoint * cos(planets[4].phi) * sin(planets[4].theta);
-    planets[4].position[1] = planets[4].distanceFromRefPoint * sin(planets[4].phi) * sin(planets[4].theta);
-    planets[4].position[2] = -30 + planets[4].distanceFromRefPoint * cos(planets[4].theta);
+    planets[4].position[0] = planets[4].distanceFromRefPoint * cos(planets[4].theta);
+    planets[4].position[1] = planets[4].distanceFromRefPoint * sin(planets[4].theta);
+    planets[4].position[2] = -30;
     
     planets[5].rotationAngle += 0.85;
-    planets[5].phi += 0.003;
-    planets[5].theta -= 0.0042;
-    planets[5].position[0] = planets[5].distanceFromRefPoint * cos(planets[5].phi) * sin(planets[5].theta);
-    planets[5].position[1] = planets[5].distanceFromRefPoint * sin(planets[5].phi) * sin(planets[5].theta);
-    planets[5].position[2] = -30 + planets[5].distanceFromRefPoint * cos(planets[5].theta);
+    planets[5].theta += 0.08;
+    planets[5].position[0] = planets[5].distanceFromRefPoint * cos(planets[5].theta);
+    planets[5].position[1] = planets[5].distanceFromRefPoint * sin(planets[5].theta);
+    planets[5].position[2] = -30;
     
 }
