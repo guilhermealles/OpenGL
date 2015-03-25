@@ -11,10 +11,19 @@ void main()
     vec3 norm = normalize(normal);
     vec3 L = normalize(lightVec);
     vec3 V = normalize(viewVec);
+<<<<<<< HEAD
     vec3 half_angle = normalize(L+V);
     vec3 reflect_vector = reflect(-L, norm);
     vec4 blue = vec4(0.0, 0.0, 0.55, 1.0);
     vec4 yellow = vec4(0.3, 0.3, 0.0, 1.0);
+=======
+    vec3 halfAngle = normalize(L+V);
+    vec4 blue = vec4(0.0, 0.0, 0.1, 1.0);
+    vec4 yellow = vec4(0.4, 0.4, 0.0, 1.0);
+    
+    float alpha = 0.25;
+    float beta = 0.5;
+>>>>>>> origin/master
     
     float alpha = 0.25;
     float beta = 0.5;
